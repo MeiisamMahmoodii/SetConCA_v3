@@ -21,6 +21,9 @@ dependencies = [
 
 [project.optional-dependencies]
 reviewer = ["dictionary-learning>=0.1.0"]
+server = [
+    "vllm; sys_platform == 'linux' and python_version < '3.13'",
+]
 
 [tool.pytest.ini_options]
 pythonpath = ["code"]
