@@ -55,6 +55,14 @@ def resolve_num_layers(model_id: str, trust_remote_code: bool) -> int:
         value = getattr(cfg, attr, None)
         if value is not None:
             return int(value)
+    for nested_attr in ("text_config", "language_config", "llm_config"):
+        nested = getattr(cfg, nested_attr, None)
+        if nested is None:
+            continue
+        for attr in ("num_hidden_layers", "n_layer", "num_layers"):
+            value = getattr(nested, attr, None)
+            if value is not None:
+                return int(value)
     raise ValueError(f"Could not determine number of hidden layers for {model_id}")
 
 
@@ -91,7 +99,17 @@ def build_jobs(
         if use_config_layers and model.get("num_hidden_layers") is not None:
             n_layers = int(model["num_hidden_layers"])
         else:
-            n_layers = layer_cache.setdefault(model_id, resolve_num_layers(model_id, trust_remote_code))
+            try:
+                n_layers = layer_cache.setdefault(model_id, resolve_num_layers(model_id, trust_remote_code))
+            except ValueError:
+                if model.get("num_hidden_layers") is None:
+                    raise
+                n_layers = int(model["num_hidden_layers"])
+                print(
+                    f"Warning: using configured num_hidden_layers={n_layers} for {model_id} "
+                    "because live config resolution did not expose a standard layer field.",
+                    flush=True,
+                )
         for fraction in fractions:
             layer_idx = layer_from_fraction(n_layers, fraction)
             family_dir = out_root / family / f"{size}_{model.get('size_label', size)}" / slugify(model_id)
