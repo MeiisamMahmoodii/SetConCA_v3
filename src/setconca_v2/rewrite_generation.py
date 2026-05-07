@@ -154,6 +154,9 @@ class VLLMRewriteGenerator:
         self.llm = LLM(**llm_kwargs)
 
     def generate(self, prompt: str, generation_cfg: Dict[str, Any]) -> List[str]:
+        return self.generate_many([prompt], generation_cfg)[0]
+
+    def generate_many(self, prompts: Sequence[str], generation_cfg: Dict[str, Any]) -> List[List[str]]:
         do_sample = bool(generation_cfg.get("do_sample", True))
         temperature = float(generation_cfg.get("temperature", 0.8)) if do_sample else 0.0
         sampling_params = self.SamplingParams(
@@ -162,10 +165,15 @@ class VLLMRewriteGenerator:
             temperature=temperature,
             top_p=float(generation_cfg.get("top_p", 0.9)),
         )
-        outputs = self.llm.generate([prompt], sampling_params)
-        if not outputs:
-            return []
-        return [clean_model_output(item.text) for item in outputs[0].outputs]
+        batch_size = int(self.vllm_cfg.get("batch_size", len(prompts) or 1))
+        all_results: List[List[str]] = []
+        for start in range(0, len(prompts), batch_size):
+            chunk = list(prompts[start : start + batch_size])
+            outputs = self.llm.generate(chunk, sampling_params)
+            all_results.extend(
+                [[clean_model_output(item.text) for item in output.outputs] for output in outputs]
+            )
+        return all_results
 
     def close(self) -> None:
         del self.llm

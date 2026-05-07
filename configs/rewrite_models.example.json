@@ -10,7 +10,8 @@
   },
   "vllm": {
     "tensor_parallel_size": 1,
-    "gpu_memory_utilization": 0.90
+    "gpu_memory_utilization": 0.90,
+    "batch_size": 128
   },
   "prompting": {
     "template": "You are creating a controlled paraphrase dataset for a scientific experiment. Your job is to rewrite the sentence so that the factual meaning is preserved, but the wording is as different as possible. Follow every constraint exactly.\n\nOriginal sentence:\n{original}\n\nForbidden words. Do not use any of these exact words, and avoid obvious inflections or near-copies:\n{banned_words}\n\nRequired length: {min_words}-{max_words} words.\n\nRules:\n1. Return exactly one sentence.\n2. Use {min_words}-{max_words} words, no fewer and no more.\n3. Preserve the same factual meaning, entities, polarity, time, and event relation.\n4. Do not add new facts.\n5. Do not use any forbidden word.\n6. Change syntax and vocabulary substantially.\n7. Do not explain, list, quote, or mention these rules.\n\nFinal rewrite only:",
