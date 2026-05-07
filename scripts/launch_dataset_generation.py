@@ -39,9 +39,12 @@ def build_generation_cmd(args: argparse.Namespace, out_dir: Path, shard: str | N
 def run_single(args: argparse.Namespace) -> int:
     out_dir = ROOT / args.out_dir
     cmd = build_generation_cmd(args, out_dir)
+    env = os.environ.copy()
+    if args.backend == "vllm":
+        env.setdefault("VLLM_WORKER_MULTIPROC_METHOD", "spawn")
     print("Running single-process generation:")
     print(" ".join(cmd), flush=True)
-    return subprocess.call(cmd, cwd=ROOT)
+    return subprocess.call(cmd, cwd=ROOT, env=env)
 
 
 def run_multi(args: argparse.Namespace) -> int:
@@ -56,6 +59,7 @@ def run_multi(args: argparse.Namespace) -> int:
         cmd = build_generation_cmd(args, shard_dir, shard=shard)
         env = os.environ.copy()
         env["CUDA_VISIBLE_DEVICES"] = str(gpu_idx)
+        env.setdefault("VLLM_WORKER_MULTIPROC_METHOD", "spawn")
         log_path = logs_dir / f"shard_{gpu_idx}.log"
         log_file = log_path.open("w", encoding="utf-8")
         print(f"Launching shard {shard} on GPU {gpu_idx}: {log_path}", flush=True)

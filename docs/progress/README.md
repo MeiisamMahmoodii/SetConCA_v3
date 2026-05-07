@@ -38,6 +38,7 @@ Use Obsidian links to connect notes:
 | 2026-05-06 | Project graph simplification | Succeeded | [[2026-05-06_project_graph_simplification]] |
 | 2026-05-06 | Project graph refresh | Succeeded | [[2026-05-06_project_graph_refresh]] |
 | 2026-05-06 | Progress sync after graph refresh | Succeeded | [[2026-05-06_progress_sync_after_graph_refresh]] |
+| 2026-05-07 | Progress sync from update command | Succeeded | [[2026-05-07_progress_sync_update_command]] |
 
 ## Guide Index
 

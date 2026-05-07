@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import gc
+import os
 from dataclasses import dataclass
 from typing import Any, Dict, List, Sequence
 
@@ -123,6 +124,7 @@ class VLLMRewriteGenerator:
     """vLLM offline generator for high-throughput CUDA/WSL/Linux runs."""
 
     def __init__(self, spec: RewriteModelSpec, vllm_cfg: Dict[str, Any] | None = None):
+        os.environ.setdefault("VLLM_WORKER_MULTIPROC_METHOD", "spawn")
         try:
             from vllm import LLM, SamplingParams
         except ImportError as exc:
