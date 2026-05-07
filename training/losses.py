@@ -5,7 +5,7 @@ from dataclasses import dataclass
 import torch
 import torch.nn.functional as F
 
-from setconca_v2.model.setconca_v2 import SetConCAV2
+from model.setconca_v2 import SetConCAV2
 
 
 @dataclass
@@ -104,4 +104,3 @@ def compute_v2_loss(
         "residual_energy": residual_energy.detach(),
     }
     return total, parts
-

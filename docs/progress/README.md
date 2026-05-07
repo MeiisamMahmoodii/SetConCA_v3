@@ -8,6 +8,7 @@ Use Obsidian links to connect notes:
 - [[2026-05-06_progress_update_protocol]]
 - [[2026-05-06_project_graph_refresh]]
 - [[raw_json_to_dataset_guide]]
+- [[multi_gpu_server_usage_guide]]
 - [[TEMPLATE_task_log]]
 
 ## Logging Rules
@@ -39,12 +40,18 @@ Use Obsidian links to connect notes:
 | 2026-05-06 | Project graph refresh | Succeeded | [[2026-05-06_project_graph_refresh]] |
 | 2026-05-06 | Progress sync after graph refresh | Succeeded | [[2026-05-06_progress_sync_after_graph_refresh]] |
 | 2026-05-07 | Progress sync from update command | Succeeded | [[2026-05-07_progress_sync_update_command]] |
+| 2026-05-07 | Multi-GPU server usage guide | Succeeded | [[2026-05-07_multi_gpu_server_usage_guide]] |
+| 2026-05-07 | Server 4-GPU 2000-original dataset QA | Succeeded | [[2026-05-07_server_4gpu_2000_dataset_qa]] |
+| 2026-05-07 | Activation extraction pipeline | Succeeded | [[2026-05-07_activation_extraction_pipeline]] |
+| 2026-05-07 | SetConCA V2 training entrypoint | Succeeded | [[2026-05-07_setconca_v2_training_entrypoint]] |
+| 2026-05-07 | Model family and layer grid plan | Succeeded | [[2026-05-07_model_family_layer_grid_plan]] |
 
 ## Guide Index
 
 | Topic | Guide |
 | --- | --- |
 | Raw JSON/JSONL to SetConCA V2 dataset | [[raw_json_to_dataset_guide]] |
+| Multi-GPU server dataset generation | [[multi_gpu_server_usage_guide]] |
 
 ## Workflow Notes
 

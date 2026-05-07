@@ -1,0 +1,36 @@
+.test_tmp/
+__pycache__/
+*.pyc
+.pytest_cache/
+pytest-cache-files-*/
+
+# Local environments
+.venv/
+venv/
+
+# Generated datasets and experiment outputs
+data/generated/
+data/activations/
+results/
+reports/
+figures/
+
+# Large local data/model artifacts
+*.pt
+*.pth
+*.ckpt
+*.bin
+*.safetensors
+*.onnx
+*.h5
+*.pkl
+*.joblib
+*.npy
+*.npz
+*.tar
+*.tar.gz
+*.zip
+*.7z
+
+# Raw downloaded datasets can be regenerated.
+data/raw/

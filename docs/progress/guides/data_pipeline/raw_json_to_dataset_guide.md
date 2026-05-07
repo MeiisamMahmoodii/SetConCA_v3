@@ -241,6 +241,32 @@ python scripts\generate_constrained_sets.py `
 
 Use a small `--max-originals` first. If the pilot produces good review rows, increase it.
 
+Server command with vLLM:
+
+```bash
+python scripts/launch_dataset_generation.py \
+  --models-config configs/rewrite_models.example.json \
+  --input data/raw/ag_news_train_full.jsonl \
+  --out-dir data/generated/server_single_pilot \
+  --backend vllm \
+  --gpus 1 \
+  --max-originals 10
+```
+
+Multi-GPU server command:
+
+```bash
+python scripts/launch_dataset_generation.py \
+  --models-config configs/rewrite_models.example.json \
+  --input data/raw/ag_news_train_full.jsonl \
+  --out-dir data/generated/server_vllm_4gpu \
+  --backend vllm \
+  --gpus 4 \
+  --max-originals 1000
+```
+
+More detail: [[multi_gpu_server_usage_guide]]
+
 ## 10. Step 7: Build The Prompt
 
 Code owner: `build_prompt` in `rewrite_generation.py`.
@@ -325,6 +351,7 @@ The generation script writes four main artifacts plus a manifest:
 | `sets.jsonl` | Rewrites grouped by original sentence. | Main semantic-set dataset. |
 | `review_table.md` | Human-readable table. | Manual inspection and reporting. |
 | `run_manifest.json` | Config path, input, device, counts, bands, timing. | Reproducibility. |
+| `logs/shard_*.log` | Per-shard logs when using the multi-GPU launcher. | Server debugging and failure recovery. |
 
 Grouped set shape:
 
@@ -368,7 +395,30 @@ Manual review should ask:
 
 Only after review should we use `sets.jsonl` for activation extraction.
 
-## 15. Full Pipeline Checklist
+## 15. Current Recorded Pilot Baseline
+
+The workspace contains a real pilot output:
+
+```text
+data/generated/pilot_real_50
+```
+
+| Metric | Value |
+| --- | ---: |
+| Device | CUDA |
+| GPU | NVIDIA GeForce RTX 3090 |
+| Input | `data/raw/ag_news_train_full.jsonl` |
+| Originals | 50 |
+| Models | 10 |
+| Attempts | 15702 |
+| Accepted | 796 |
+| Runtime | 18597.3 seconds, about 5.17 hours |
+
+Interpretation:
+
+The pilot confirms the full data path can produce accepted constrained rewrites. It also shows why server sharding or vLLM batching is necessary before large runs.
+
+## 16. Full Pipeline Checklist
 
 - [ ] Decide dataset source and split.
 - [ ] Run `scripts/download_news_dataset.py`.
@@ -376,12 +426,13 @@ Only after review should we use `sets.jsonl` for activation extraction.
 - [ ] Inspect first rows of `data/raw/ag_news_train.jsonl`.
 - [ ] Choose or enable rewrite models in config.
 - [ ] Run a dry-run or 10-row pilot.
+- [ ] For server runs, read [[multi_gpu_server_usage_guide]] and start with a small vLLM pilot.
 - [ ] Inspect `attempts.jsonl` rejection reasons.
 - [ ] Inspect `review_table.md`.
 - [ ] Record results in a progress note.
 - [ ] Increase `--max-originals` only after pilot quality is acceptable.
 
-## 16. External Works And Technology Sources
+## 17. External Works And Technology Sources
 
 | Work Or Tool | Link | Core Objective | How We Use It |
 | --- | --- | --- | --- |
@@ -389,13 +440,14 @@ Only after review should we use `sets.jsonl` for activation extraction.
 | Hugging Face Datasets | [Documentation](https://huggingface.co/docs/datasets) | Standardize dataset loading and caching with a common Python API. | `load_dataset("ag_news", split="train")` loads the raw AG News records. |
 | Sentence-BERT, Reimers and Gurevych 2019 | [arXiv 1908.10084](https://arxiv.org/abs/1908.10084) | Create sentence embeddings suitable for cosine similarity comparison. | Optional semantic validation can reject rewrites with low embedding cosine similarity. |
 | MultiNLI, Williams et al. 2018 | [arXiv 1704.05426](https://arxiv.org/abs/1704.05426) | Train and evaluate natural language inference models across many genres. | Optional NLI validation can check entailment and contradiction between original and rewrite. |
+| vLLM / PagedAttention, Kwon et al. 2023 | [arXiv 2309.06180](https://arxiv.org/abs/2309.06180) | Increase LLM generation throughput with efficient KV-cache memory management. | Server rewrite generation can use the `vllm` backend for batching and tensor parallelism. |
 
-## 17. Current Known Risks
+## 18. Current Known Risks
 
 | Risk | Why It Matters | Proposed Fix |
 | --- | --- | --- |
 | Embedded source artifacts like `\\band` may survive normalization. | Bad text can produce strange prompts and rewrites. | Add a cleaning pass for suspicious backslash-letter artifacts and document before/after counts. |
 | Banned-word matching is exact-token only. | Inflections and close copies can survive. | Add lemmatization or stem-based banned-word validation. |
 | Semantic validation disabled by default. | Meaning drift may pass if only length and banned words are checked. | Enable embedding validation for pilot runs, then compare manual review quality. |
-| Example models are disabled by default. | Real generation will not run without config changes. | Create a local config for the machine and record model choice in a task note. |
-
+| Current example models are enabled. | A full command may download and run many large models. | Use `--max-originals` pilots and record the exact config before full server runs. |
+| Server behavior differs from Windows local behavior. | vLLM is Linux/CUDA-oriented. | Validate on the actual server and save logs/manifests. |
