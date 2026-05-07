@@ -1,0 +1,76 @@
+{
+  "notes": "Replace these with local Hugging Face model IDs or local paths available on your machine. Models are loaded one at a time.",
+  "generation": {
+    "max_new_tokens": 80,
+    "temperature": 0.8,
+    "top_p": 0.9,
+    "do_sample": true,
+    "num_return_sequences": 2,
+    "max_attempts_per_slot": 5
+  },
+  "prompting": {
+    "template": "You are creating a controlled paraphrase dataset for a scientific experiment. Your job is to rewrite the sentence so that the factual meaning is preserved, but the wording is as different as possible. Follow every constraint exactly.\n\nOriginal sentence:\n{original}\n\nForbidden words. Do not use any of these exact words, and avoid obvious inflections or near-copies:\n{banned_words}\n\nRequired length: {min_words}-{max_words} words.\n\nRules:\n1. Return exactly one sentence.\n2. Use {min_words}-{max_words} words, no fewer and no more.\n3. Preserve the same factual meaning, entities, polarity, time, and event relation.\n4. Do not add new facts.\n5. Do not use any forbidden word.\n6. Change syntax and vocabulary substantially.\n7. Do not explain, list, quote, or mention these rules.\n\nFinal rewrite only:",
+    "system_message": "You are a precise rewriting engine for dataset construction. Obey constraints literally and output only the requested sentence."
+  },
+  "semantic_validation": {
+    "enabled": false,
+    "embedding_model": "sentence-transformers/all-MiniLM-L6-v2",
+    "min_embedding_cosine": 0.62,
+    "nli_enabled": false,
+    "nli_model": "MoritzLaurer/DeBERTa-v3-base-mnli-fever-anli",
+    "min_entailment": 0.50,
+    "max_contradiction": 0.25
+  },
+  "models": [
+    {
+      "name": "gemma-2-2b-it",
+      "model_id": "google/gemma-2-2b-it",
+      "enabled": true
+    },
+    {
+      "name": "llama-3.2-1b-instruct",
+      "model_id": "meta-llama/Llama-3.2-1B-Instruct",
+      "enabled": true
+    },
+    {
+      "name": "qwen2.5-3b-instruct",
+      "model_id": "Qwen/Qwen2.5-3B-Instruct",
+      "enabled": true
+    },
+    {
+      "name": "mistral-7b-instruct",
+      "model_id": "mistralai/Mistral-7B-Instruct-v0.3",
+      "enabled": true
+    },
+    {
+      "name": "phi-3.5-mini-instruct",
+      "model_id": "microsoft/Phi-3.5-mini-instruct",
+      "enabled": true
+    },
+    {
+      "name": "qwen2.5-1.5b-instruct",
+      "model_id": "Qwen/Qwen2.5-1.5B-Instruct",
+      "enabled": true
+    },
+    {
+      "name": "qwen2.5-7b-instruct",
+      "model_id": "Qwen/Qwen2.5-7B-Instruct",
+      "enabled": true
+    },
+    {
+      "name": "llama-3.2-3b-instruct",
+      "model_id": "meta-llama/Llama-3.2-3B-Instruct",
+      "enabled": true
+    },
+    {
+      "name": "tinyllama-1.1b-chat",
+      "model_id": "TinyLlama/TinyLlama-1.1B-Chat-v1.0",
+      "enabled": true
+    },
+    {
+      "name": "olmo-2-7b-instruct",
+      "model_id": "allenai/OLMo-2-1124-7B-Instruct",
+      "enabled": true
+    }
+  ]
+}

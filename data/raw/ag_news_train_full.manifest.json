@@ -1,0 +1,13 @@
+{
+  "dataset": "ag_news",
+  "format": {
+    "id": "string",
+    "label": "string|null",
+    "source": "string",
+    "text": "string"
+  },
+  "limit": 999999,
+  "n_rows": 120000,
+  "out": "C:\\Users\\MPC\\Documents\\code\\SetConCA\\SetConCA_V2\\data\\raw\\ag_news_train_full.jsonl",
+  "split": "train"
+}

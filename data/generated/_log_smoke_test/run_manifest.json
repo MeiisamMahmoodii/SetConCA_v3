@@ -1,0 +1,35 @@
+{
+  "cuda_device": null,
+  "device": "cpu",
+  "dry_run": true,
+  "elapsed_s": 0.05334758758544922,
+  "input": "C:\\Users\\MPC\\Documents\\code\\SetConCA\\SetConCA_V2\\data\\raw\\ag_news_train_full.jsonl",
+  "length_bands": [
+    {
+      "label": "5-7",
+      "max_words": 7,
+      "min_words": 5
+    },
+    {
+      "label": "10-12",
+      "max_words": 12,
+      "min_words": 10
+    },
+    {
+      "label": "15-17",
+      "max_words": 17,
+      "min_words": 15
+    },
+    {
+      "label": "20-22",
+      "max_words": 22,
+      "min_words": 20
+    }
+  ],
+  "models_config": "C:\\Users\\MPC\\Documents\\code\\SetConCA\\SetConCA_V2\\configs\\rewrite_models.example.json",
+  "n_accepted": 10,
+  "n_attempts": 480,
+  "n_models": 10,
+  "n_originals": 1,
+  "out_dir": "C:\\Users\\MPC\\Documents\\code\\SetConCA\\SetConCA_V2\\data\\generated\\_log_smoke_test"
+}
