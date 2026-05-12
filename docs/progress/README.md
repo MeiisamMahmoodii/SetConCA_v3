@@ -45,6 +45,30 @@ Use Obsidian links to connect notes:
 | 2026-05-07 | Activation extraction pipeline | Succeeded | [[2026-05-07_activation_extraction_pipeline]] |
 | 2026-05-07 | SetConCA V2 training entrypoint | Succeeded | [[2026-05-07_setconca_v2_training_entrypoint]] |
 | 2026-05-07 | Model family and layer grid plan | Succeeded | [[2026-05-07_model_family_layer_grid_plan]] |
+| 2026-05-07 | 4A100 activation grid QA | Succeeded | [[2026-05-07_activation_grid_4A100_qa]] |
+| 2026-05-07 | V1 goal and test reconstruction | Succeeded | [[2026-05-07_v1_goal_and_test_reconstruction]] |
+| 2026-05-07 | V2 transfer and steering pipeline | Succeeded | [[2026-05-07_v2_transfer_steering_pipeline]] |
+| 2026-05-08 | Family pilot results review | Succeeded | [[2026-05-08_family_pilot_results_review]] |
+| 2026-05-08 | Bridge diagnostics and shuffled controls | Succeeded | [[2026-05-08_bridge_diagnostics]] |
+| 2026-05-08 | Diagnostic family reruns, 25 epochs batch 128 | Succeeded | [[2026-05-08_diagnostic_family_reruns_e25_b128]] |
+| 2026-05-08 | Cross-family pair verification | Succeeded | [[2026-05-08_cross_family_pair_verification]] |
+| 2026-05-08 | Proposal alignment audit | Succeeded | [[2026-05-08_proposal_alignment_audit]] |
+| 2026-05-08 | Llama/Qwen focus and pointwise baseline | Ready | [[2026-05-08_llama_qwen_focus_and_pointwise_baseline]] |
+| 2026-05-08 | SetConCA vs pointwise baseline results | Succeeded | [[2026-05-08_setconca_vs_pointwise_baseline_results]] |
+| 2026-05-08 | Layer-pair breakdown | Succeeded | [[2026-05-08_layer_pair_breakdown]] |
+| 2026-05-08 | Automatic summary reporting for Llama/Qwen bridge results | Succeeded | [[2026-05-08_automatic_summary_reporting]] |
+| 2026-05-08 | Epoch sweep comparison, 25 vs 50 vs 100 | Succeeded | [[2026-05-08_epoch_sweep_comparison]] |
+| 2026-05-08 | Bridged concept inspection | Succeeded | [[2026-05-08_bridged_concept_inspection]] |
+| 2026-05-08 | Concept review pages | Succeeded | [[2026-05-08_concept_review_pages]] |
+| 2026-05-08 | First-pass concept labels | Succeeded | [[2026-05-08_first_pass_concept_labels]] |
+| 2026-05-08 | Diverse steering slice | Succeeded | [[2026-05-08_diverse_steering_slice]] |
+| 2026-05-08 | Diverse run and concept inspection | Succeeded | [[2026-05-08_diverse_run_and_concept_inspection]] |
+| 2026-05-08 | Causal steering probe setup | Succeeded | [[2026-05-08_causal_steering_probe_setup]] |
+| 2026-05-08 | First causal steering probe results | Partial | [[2026-05-08_first_causal_steering_probe_results]] |
+| 2026-05-08 | News-prompt causal steering results | Partial success | [[2026-05-08_news_prompt_causal_steering_results]] |
+| 2026-05-11 | Positive vs negative steering comparison | Partial | [[2026-05-11_positive_vs_negative_steering_comparison]] |
+| 2026-05-11 | Opposite-active steering results | Partial success | [[2026-05-11_opposite_active_steering_results]] |
+| 2026-05-12 | Project graph refresh | Succeeded | [[2026-05-12_project_graph_refresh]] |
 
 ## Guide Index
 

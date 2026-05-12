@@ -47,7 +47,8 @@
       "size_label": "1b",
       "model_id": "google/gemma-3-1b-pt",
       "num_hidden_layers": 26,
-      "enabled": true
+      "enabled": false,
+      "notes": "Disabled for the next V2 phase because shuffled-anchor controls showed weak controlled bridge evidence for Gemma 3."
     },
     {
       "family": "gemma3",
@@ -55,7 +56,8 @@
       "size_label": "4b",
       "model_id": "google/gemma-3-4b-pt",
       "num_hidden_layers": 34,
-      "enabled": true
+      "enabled": false,
+      "notes": "Disabled for the next V2 phase because shuffled-anchor controls showed weak controlled bridge evidence for Gemma 3."
     },
     {
       "family": "gemma3",
@@ -63,8 +65,8 @@
       "size_label": "12b",
       "model_id": "google/gemma-3-12b-pt",
       "num_hidden_layers": 48,
-      "enabled": true,
-      "notes": "Gemma 3 does not have a 7B release; 12B is the nearest official big size."
+      "enabled": false,
+      "notes": "Gemma 3 does not have a 7B release; 12B is the nearest official big size. Disabled for the next V2 phase because shuffled-anchor controls showed weak controlled bridge evidence for Gemma 3."
     },
     {
       "family": "qwen3",

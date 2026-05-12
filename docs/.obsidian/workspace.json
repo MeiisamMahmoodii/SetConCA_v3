@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "PROJECT_GRAPH.md",
+                "file": "progress/README.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "PROJECT_GRAPH"
+              "title": "README"
             }
           }
         ]
@@ -94,7 +94,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "PROJECT_GRAPH.md",
+                "file": "progress/README.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -104,7 +104,7 @@
                 "unlinkedCollapsed": true
               },
               "icon": "links-coming-in",
-              "title": "Backlinks for PROJECT_GRAPH"
+              "title": "Backlinks for README"
             }
           },
           {
@@ -113,12 +113,12 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "PROJECT_GRAPH.md",
+                "file": "progress/README.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               },
               "icon": "links-going-out",
-              "title": "Outgoing links from PROJECT_GRAPH"
+              "title": "Outgoing links from README"
             }
           },
           {
@@ -156,13 +156,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "PROJECT_GRAPH.md",
+                "file": "progress/README.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Outline of PROJECT_GRAPH"
+              "title": "Outline of README"
             }
           }
         ]
@@ -185,18 +185,48 @@
   },
   "active": "8165d41fda0b59e3",
   "lastOpenFiles": [
-    "EXPERIMENT_REPORT.md",
-    "progress/2026-05-07_model_family_layer_grid_plan.md",
-    "progress/2026-05-07_setconca_v2_training_entrypoint.md",
-    "progress/2026-05-07_activation_extraction_pipeline.md",
-    "progress/2026-05-07_server_4gpu_2000_dataset_qa.md",
-    "progress/2026-05-07_multi_gpu_server_usage_guide.md",
-    "progress/guides/server/multi_gpu_server_usage_guide.md",
-    "progress/guides/server/README.md",
-    "progress/guides/server",
-    "progress/2026-05-07_progress_sync_update_command.md",
-    "progress/2026-05-06_progress_sync_after_graph_refresh.md",
-    "progress/2026-05-06_project_graph_refresh.md",
-    "progress/2026-05-06_project_graph_simplification.md"
+    "progress/2026-05-12_project_graph_refresh.md",
+    "temp_setconca_report/SetConCA_Report.pdf",
+    "temp_setconca_report/figures/active_vs_opposite_keyword_gain_explained.png",
+    "temp_setconca_report/figures/training_loss_summary.png",
+    "temp_setconca_report/tmp/rendered_check",
+    "progress/2026-05-11_opposite_active_steering_results.md",
+    "temp_setconca_report/figures/setconca_math_summary.png",
+    "progress/2026-05-11_positive_vs_negative_steering_comparison.md",
+    "temp_setconca_report/tmp/soffice_convert_ef6fa7g5",
+    "temp_setconca_report/tmp/soffice_profile_ugw7l8b0",
+    "temp_setconca_report/tmp",
+    "temp_setconca_report/rendered",
+    "temp_setconca_report/SetConCA_Temporary_Report.pdf",
+    "temp_setconca_report/SetConCA_Temporary_Report.docx",
+    "temp_setconca_report/SetConCA_Temporary_Report.md",
+    "temp_setconca_report/figures/topk_control_explanation.png",
+    "temp_setconca_report/figures/dataset_funnel.png",
+    "temp_setconca_report/figures/setconca_v2_architecture.png",
+    "temp_setconca_report/figures/pipeline_diagram.png",
+    "temp_setconca_report/figures",
+    "temp_setconca_report/build_setconca_temp_report.py",
+    "progress/2026-05-08_news_prompt_causal_steering_results.md",
+    "progress/2026-05-08_first_causal_steering_probe_results.md",
+    "progress/2026-05-08_causal_steering_probe_setup.md",
+    "progress/2026-05-08_diverse_run_and_concept_inspection.md",
+    "progress/2026-05-08_diverse_steering_slice.md",
+    "progress/2026-05-08_first_pass_concept_labels.md",
+    "progress/2026-05-08_concept_review_pages.md",
+    "progress/2026-05-08_bridged_concept_inspection.md",
+    "progress/2026-05-08_epoch_sweep_comparison.md",
+    "progress/2026-05-08_automatic_summary_reporting.md",
+    "progress/2026-05-08_layer_pair_breakdown.md",
+    "progress/2026-05-08_setconca_vs_pointwise_baseline_results.md",
+    "progress/2026-05-08_llama_qwen_focus_and_pointwise_baseline.md",
+    "progress/2026-05-08_proposal_alignment_audit.md",
+    "progress/2026-05-08_cross_family_pair_verification.md",
+    "progress/2026-05-08_diagnostic_family_reruns_e25_b128.md",
+    "progress/2026-05-08_bridge_diagnostics.md",
+    "progress/2026-05-08_family_pilot_results_review.md",
+    "progress/2026-05-07_v2_transfer_steering_pipeline.md",
+    "progress/2026-05-07_v1_goal_and_test_reconstruction.md",
+    "progress/2026-05-07_activation_grid_4A100_qa.md",
+    "progress/TEMPLATE_task_log.md"
   ]
 }
