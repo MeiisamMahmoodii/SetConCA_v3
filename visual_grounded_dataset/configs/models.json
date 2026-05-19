@@ -1,0 +1,82 @@
+{
+  "version": "vlm_models_v1",
+  "models": [
+    {
+      "model_id": "Qwen/Qwen3-VL-4B-Instruct",
+      "source_id": "qwen3_vl_4b",
+      "backend": "transformers",
+      "adapter": "generic_pipeline",
+      "image_ref_mode": "path",
+      "enabled": true,
+      "notes": "Current compact Qwen VLM. Good first real local pilot if hardware is limited."
+    },
+    {
+      "model_id": "Qwen/Qwen2.5-VL-7B-Instruct",
+      "source_id": "qwen2_5_vl_7b",
+      "backend": "transformers",
+      "adapter": "qwen_vl",
+      "enabled": true,
+      "notes": "Primary local multilingual VLM baseline."
+    },
+    {
+      "model_id": "OpenGVLab/InternVL3-8B-Instruct",
+      "source_id": "internvl3_8b",
+      "backend": "transformers",
+      "adapter": "internvl_chat",
+      "enabled": true,
+      "notes": "Independent model-family diversity."
+    },
+    {
+      "model_id": "google/gemma-4-E4B-it",
+      "source_id": "gemma4_e4b_it",
+      "backend": "transformers",
+      "adapter": "gemma4_multimodal",
+      "enabled": true,
+      "notes": "Gemma 4 E4B multimodal model; useful compact Google-family comparator."
+    },
+    {
+      "model_id": "google/gemma-3-4b-it",
+      "source_id": "gemma3_4b_it",
+      "backend": "transformers",
+      "adapter": "generic_pipeline",
+      "image_ref_mode": "path",
+      "enabled": true,
+      "notes": "Small Gemma vision-language comparator; requires accepting Google Gemma license."
+    },
+    {
+      "model_id": "CohereLabs/aya-vision-8b",
+      "source_id": "aya_vision_8b",
+      "backend": "transformers",
+      "adapter": "generic_pipeline",
+      "image_ref_mode": "path",
+      "enabled": true,
+      "notes": "Multilingual multimodal model; requires accepting Cohere model terms."
+    },
+    {
+      "model_id": "google/paligemma2-3b-mix-448",
+      "source_id": "paligemma2_3b_mix",
+      "backend": "transformers",
+      "adapter": "generic_pipeline",
+      "image_ref_mode": "path",
+      "enabled": true,
+      "notes": "Smaller captioning-style comparator."
+    },
+    {
+      "model_id": "Qwen/Qwen3-VL-8B-Instruct",
+      "source_id": "qwen3_vl_8b",
+      "backend": "transformers",
+      "adapter": "generic_pipeline",
+      "image_ref_mode": "path",
+      "enabled": false,
+      "notes": "Stronger Qwen3 VLM; disabled by default because it is heavier than the 4B pilot model."
+    },
+    {
+      "model_id": "google/gemma-4-26B-A4B-it",
+      "source_id": "gemma4_26b_a4b_it",
+      "backend": "transformers",
+      "adapter": "gemma4_multimodal",
+      "enabled": false,
+      "notes": "Stronger Gemma 4 MoE comparator; disabled by default because of memory cost."
+    }
+  ]
+}

@@ -1,0 +1,57 @@
+{
+  "generated_at": "2026-05-12",
+  "root": "docs + existing src/scripts graph",
+  "preserved_existing_graph": "graphify-out\\graph_src_scripts.json",
+  "semantic_chunks": [
+    {
+      "file": "chunk_01_docs.json",
+      "nodes": 43,
+      "edges": 61,
+      "hyperedges": 3
+    },
+    {
+      "file": "chunk_02_docs.json",
+      "nodes": 42,
+      "edges": 58,
+      "hyperedges": 3
+    },
+    {
+      "file": "chunk_03_docs.json",
+      "nodes": 44,
+      "edges": 58,
+      "hyperedges": 3
+    },
+    {
+      "file": "chunk_04_docs.json",
+      "nodes": 38,
+      "edges": 59,
+      "hyperedges": 3
+    },
+    {
+      "file": "chunk_05_docs.json",
+      "nodes": 45,
+      "edges": 58,
+      "hyperedges": 3
+    }
+  ],
+  "semantic_totals": {
+    "nodes": 212,
+    "edges": 294,
+    "hyperedges": 15
+  },
+  "combined_graph": {
+    "nodes": 453,
+    "edges": 694,
+    "communities": 30,
+    "hyperedges": 15
+  },
+  "outputs": [
+    "graphify-out/graph.html",
+    "graphify-out/graph.json",
+    "graphify-out/GRAPH_REPORT.md",
+    "graphify-out/graph_docs_combined.html",
+    "graphify-out/graph_docs_combined.json",
+    "graphify-out/GRAPH_REPORT_docs_combined.md",
+    "graphify-out/.graphify_semantic_docs.json"
+  ]
+}

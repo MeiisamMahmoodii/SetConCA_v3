@@ -1,0 +1,97 @@
+{
+  "version": "latent_sources_v0",
+  "sources": [
+    {
+      "source_id": "fever",
+      "hf_dataset": "fever/fever",
+      "builder": "fever_claim_evidence",
+      "status": "build_now",
+      "primary_use": "latent_set_training",
+      "splits": ["train", "labelled_dev"],
+      "latent_types": ["fact"],
+      "license": "see_dataset_card",
+      "config": "v1.0",
+      "notes": "First builder target. Claims, labels, and evidence make this the cleanest schema sanity check."
+    },
+    {
+      "source_id": "feverous",
+      "hf_dataset": "fever/feverous",
+      "builder": "feverous_claim_evidence",
+      "status": "build_now",
+      "primary_use": "latent_set_training",
+      "splits": ["train", "validation"],
+      "latent_types": ["fact"],
+      "license": "see_dataset_card",
+      "notes": "Second FEVER-family source if the plain FEVER builder succeeds."
+    },
+    {
+      "source_id": "hotpotqa",
+      "hf_dataset": "hotpotqa/hotpot_qa",
+      "builder": "hotpotqa_answer_evidence",
+      "status": "build_now",
+      "primary_use": "latent_set_training",
+      "splits": ["train", "validation"],
+      "latent_types": ["entity", "fact"],
+      "license": "see_dataset_card",
+      "config": "distractor",
+      "notes": "Richer multi-hop answer/evidence sets; implement after FEVER validates the schema."
+    },
+    {
+      "source_id": "allnli",
+      "hf_dataset": "sentence-transformers/all-nli",
+      "builder": "nli_event_scene",
+      "status": "build_now",
+      "primary_use": "latent_set_training",
+      "splits": ["train"],
+      "latent_types": ["event_scene"],
+      "license": "see_dataset_card",
+      "notes": "Use for entailment and contradiction structure; include artifact and genre checks."
+    },
+    {
+      "source_id": "paws",
+      "hf_dataset": "paws",
+      "builder": "paws_lexical_adversarial_negatives",
+      "status": "build_now",
+      "primary_use": "hard_negative_pool",
+      "splits": ["train", "validation", "test"],
+      "latent_types": ["lexical_adversarial_negative"],
+      "license": "see_dataset_card",
+      "config": "labeled_final",
+      "notes": "Use as hard negatives, not as the main positive latent-set source."
+    },
+    {
+      "source_id": "truthfulqa",
+      "hf_dataset": "truthfulqa/truthful_qa",
+      "builder": "truthfulqa_intervention_eval",
+      "status": "optional_eval",
+      "primary_use": "intervention_benchmark",
+      "splits": ["validation"],
+      "latent_types": ["behavior_truthfulness"],
+      "license": "apache-2.0",
+      "config": "generation",
+      "notes": "Eval-only truthfulness/misconception benchmark and data-generation template; not core SetConCA training data."
+    },
+    {
+      "source_id": "quora_duplicates",
+      "hf_dataset": "sentence-transformers/quora-duplicates",
+      "builder": "duplicate_intent_graph",
+      "status": "future_work",
+      "primary_use": "latent_set_training",
+      "splits": ["train"],
+      "latent_types": ["intent"],
+      "license": "see_dataset_card",
+      "notes": "Valuable but noisy; defer until evidence-backed builders pass validation."
+    },
+    {
+      "source_id": "bbq",
+      "hf_dataset": "walledai/BBQ",
+      "builder": "bias_intervention_eval",
+      "status": "future_work",
+      "primary_use": "intervention_benchmark",
+      "splits": ["test"],
+      "latent_types": ["behavior_bias_resistance"],
+      "license": "see_dataset_card",
+      "notes": "Sensitive content. Requires data ethics appendix and governance before use."
+    }
+  ]
+}

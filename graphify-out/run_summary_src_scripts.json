@@ -1,0 +1,117 @@
+{
+  "files": 25,
+  "nodes": 241,
+  "edges": 406,
+  "communities": 23,
+  "god_nodes": [
+    {
+      "id": "run_transfer_steering_grid_main",
+      "label": "main()",
+      "edges": 17
+    },
+    {
+      "id": "inspect_bridged_concepts_main",
+      "label": "main()",
+      "edges": 9
+    },
+    {
+      "id": "run_transfer_steering_grid_evaluate_pairs",
+      "label": "evaluate_pairs()",
+      "edges": 9
+    },
+    {
+      "id": "run_transfer_steering_grid_plot_summary_artifacts",
+      "label": "plot_summary_artifacts()",
+      "edges": 9
+    },
+    {
+      "id": "compare_transfer_runs_main",
+      "label": "main()",
+      "edges": 8
+    }
+  ],
+  "surprises": [
+    {
+      "source": "RewriteModelSpec",
+      "target": "LengthBand",
+      "source_files": [
+        "src\\setconca_v2\\rewrite_generation.py",
+        "src\\setconca_v2\\text_constraints.py"
+      ],
+      "confidence": "INFERRED",
+      "relation": "uses",
+      "why": "inferred connection - not explicitly stated in source; connects across different repos/directories; peripheral node `RewriteModelSpec` unexpectedly reaches hub `LengthBand`"
+    },
+    {
+      "source": "vLLM offline generator for high-throughput CUDA/WSL/Linux runs.",
+      "target": "LengthBand",
+      "source_files": [
+        "src\\setconca_v2\\rewrite_generation.py",
+        "src\\setconca_v2\\text_constraints.py"
+      ],
+      "confidence": "INFERRED",
+      "relation": "uses",
+      "why": "inferred connection - not explicitly stated in source; connects across different repos/directories; peripheral node `vLLM offline generator for high-throughput CUDA/WSL/Linux runs.` unexpectedly reaches hub `LengthBand`"
+    },
+    {
+      "source": "Deterministic fallback for tests and pipeline dry-runs.",
+      "target": "LengthBand",
+      "source_files": [
+        "src\\setconca_v2\\rewrite_generation.py",
+        "src\\setconca_v2\\text_constraints.py"
+      ],
+      "confidence": "INFERRED",
+      "relation": "uses",
+      "why": "inferred connection - not explicitly stated in source; connects across different repos/directories; peripheral node `Deterministic fallback for tests and pipeline dry-runs.` unexpectedly reaches hub `LengthBand`"
+    },
+    {
+      "source": "HFRewriteGenerator",
+      "target": "LengthBand",
+      "source_files": [
+        "src\\setconca_v2\\rewrite_generation.py",
+        "src\\setconca_v2\\text_constraints.py"
+      ],
+      "confidence": "INFERRED",
+      "relation": "uses",
+      "why": "inferred connection - not explicitly stated in source; connects across different repos/directories"
+    },
+    {
+      "source": "VLLMRewriteGenerator",
+      "target": "LengthBand",
+      "source_files": [
+        "src\\setconca_v2\\rewrite_generation.py",
+        "src\\setconca_v2\\text_constraints.py"
+      ],
+      "confidence": "INFERRED",
+      "relation": "uses",
+      "why": "inferred connection - not explicitly stated in source; connects across different repos/directories"
+    }
+  ],
+  "questions": [
+    {
+      "type": "bridge_node",
+      "question": "Why does `PointwiseTopKModel` connect `PointwiseTopKModel / encode_set() / extract_pointwise_codes()` to `run_transfer_steering_grid.py / main() / evaluate_pairs()`?",
+      "why": "High betweenness centrality (0.007) - this node is a cross-community bridge."
+    },
+    {
+      "type": "isolated_nodes",
+      "question": "What connects `Pointwise sparse baseline: train on individual views, pool codes only at evaluat`, `SetConCA V2 utilities.`, `Resolve CLI paths so scripts work from repo root or SetConCA_V2 root.      If a` to the rest of the system?",
+      "why": "3 weakly-connected nodes found - possible documentation gaps or missing edges."
+    },
+    {
+      "type": "low_cohesion",
+      "question": "Should `run_transfer_steering_grid.py / main() / evaluate_pairs()` be split into smaller, more focused modules?",
+      "why": "Cohesion score 0.1 - nodes in this community are weakly interconnected."
+    },
+    {
+      "type": "low_cohesion",
+      "question": "Should `text_constraints.py / VLLMRewriteGenerator / rewrite_generation.py` be split into smaller, more focused modules?",
+      "why": "Cohesion score 0.12 - nodes in this community are weakly interconnected."
+    },
+    {
+      "type": "low_cohesion",
+      "question": "Should `io_utils.py / set_dataset.py / activation_extraction.py` be split into smaller, more focused modules?",
+      "why": "Cohesion score 0.11 - nodes in this community are weakly interconnected."
+    }
+  ]
+}

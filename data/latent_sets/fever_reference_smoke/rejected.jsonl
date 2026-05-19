@@ -1,0 +1,3 @@
+{"claim": "Colin Kaepernick became a starting quarterback during the 49ers 63rd season in the National Football League.", "label": "NOT ENOUGH INFO", "reasons": ["unsupported_label:NOT ENOUGH INFO", "missing_evidence_wiki_url", "missing_evidence_sentence_id"], "source_id": 91198, "source_index": 0}
+{"claim": "Tilda Swinton is a vegan.", "label": "NOT ENOUGH INFO", "reasons": ["unsupported_label:NOT ENOUGH INFO", "missing_evidence_wiki_url", "missing_evidence_sentence_id"], "source_id": 194462, "source_index": 1}
+{"claim": "Anne Rice was born in New Jersey.", "label": "NOT ENOUGH INFO", "reasons": ["unsupported_label:NOT ENOUGH INFO", "missing_evidence_wiki_url", "missing_evidence_sentence_id"], "source_id": 166626, "source_index": 3}

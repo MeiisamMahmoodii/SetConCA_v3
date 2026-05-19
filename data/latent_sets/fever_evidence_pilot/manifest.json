@@ -1,0 +1,17 @@
+{
+  "accepted_sets": 100,
+  "builder": "fever_claim_evidence",
+  "candidate_rows": 1000,
+  "include_reference_view": false,
+  "input": null,
+  "outputs": {
+    "rejected": "rejected.jsonl",
+    "rejection_report": "rejection_report.md",
+    "sets": "sets.jsonl"
+  },
+  "rejected_rows": 32,
+  "source_mode": "hf",
+  "split": "labelled_dev",
+  "wiki_jsonl": null,
+  "wiki_zip": "data\\raw\\wiki-pages.zip"
+}

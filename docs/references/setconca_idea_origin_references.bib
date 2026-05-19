@@ -1,0 +1,207 @@
+@article{liu-etal-2026-conca,
+  title = {Concept Component Analysis: A Principled Approach for Concept Extraction in LLMs},
+  author = {Yuhang Liu and Erdun Gao and Dong Gong and Anton van den Hengel and Javen Qinfeng Shi},
+  year = {2026},
+  url = {https://arxiv.org/abs/2601.20420},
+  doi = {10.48550/arXiv.2601.20420},
+  journal = {arXiv preprint arXiv:2601.20420},
+  note = {Idea-origin reference for SetConCA project. Direct source of ConCA/Sparse ConCA: log-posterior concept interpretation and sparse concept extraction used as the base idea for Set-ConCA.},
+}
+
+@misc{liu-2026-set-conca-manuscript,
+  title = {Set-ConCA: Extending Concept Component Analysis from Point Representations to Representation Sets},
+  author = {Yuhang Liu},
+  year = {2026},
+  note = {Idea-origin reference for SetConCA project. Local manuscript/proposal that directly introduces Set-ConCA: representation sets, mean pooling, shared plus residual decoder, and subset consistency.},
+}
+
+@inproceedings{zaheer-etal-2017-deep-sets,
+  title = {Deep Sets},
+  author = {Manzil Zaheer and Satwik Kottur and Siamak Ravanbakhsh and Barnabas Poczos and Ruslan Salakhutdinov and Alexander Smola},
+  year = {2017},
+  url = {https://arxiv.org/abs/1703.06114},
+  doi = {10.48550/arXiv.1703.06114},
+  booktitle = {Advances in Neural Information Processing Systems 30},
+  note = {Idea-origin reference for SetConCA project. Foundational paper for permutation-invariant set functions; supports Set-ConCA's set aggregation/mean pooling design.},
+}
+
+@article{ba-kiros-hinton-2016-layernorm,
+  title = {Layer Normalization},
+  author = {Jimmy Lei Ba and Jamie Ryan Kiros and Geoffrey E. Hinton},
+  year = {2016},
+  url = {https://arxiv.org/abs/1607.06450},
+  doi = {10.48550/arXiv.1607.06450},
+  journal = {arXiv preprint arXiv:1607.06450},
+  note = {Idea-origin reference for SetConCA project. SetConCA V2 uses LayerNorm after mean pooling in model/setconca_v2.py.},
+}
+
+@article{oord-li-vinyals-2018-cpc,
+  title = {Representation Learning with Contrastive Predictive Coding},
+  author = {Aaron van den Oord and Yazhe Li and Oriol Vinyals},
+  year = {2018},
+  url = {https://arxiv.org/abs/1807.03748},
+  doi = {10.48550/arXiv.1807.03748},
+  journal = {arXiv preprint arXiv:1807.03748},
+  note = {Idea-origin reference for SetConCA project. Introduces the InfoNCE contrastive objective family used in training/losses.py for semantic set split alignment.},
+}
+
+@inproceedings{chen-etal-2020-simclr,
+  title = {A Simple Framework for Contrastive Learning of Visual Representations},
+  author = {Ting Chen and Simon Kornblith and Mohammad Norouzi and Geoffrey Hinton},
+  year = {2020},
+  url = {https://proceedings.mlr.press/v119/chen20j.html},
+  booktitle = {Proceedings of the 37th International Conference on Machine Learning},
+  pages = {1597-1607},
+  note = {Idea-origin reference for SetConCA project. Canonical modern contrastive-learning reference for alignment of augmented views; conceptually close to SetConCA's paraphrase-view contrastive loss.},
+}
+
+@misc{elhage-etal-2022-superposition,
+  title = {Toy Models of Superposition},
+  author = {Nelson Elhage and Tristan Hume and Catherine Olsson and Nicholas Schiefer and Tom Henighan and Shauna Kravec and Zac Hatfield-Dodds and Robert Lasenby and Dawn Drain and Carol Chen and Roger Grosse and Sam McCandlish and Jared Kaplan and Dario Amodei and Martin Wattenberg and Christopher Olah},
+  year = {2022},
+  url = {https://transformer-circuits.pub/2022/toy_model/index.html},
+  journal = {Transformer Circuits Thread},
+  note = {Idea-origin reference for SetConCA project. Motivates sparse feature extraction and monosemanticity by explaining superposition/polysemanticity.},
+}
+
+@misc{bricken-etal-2023-monosemanticity,
+  title = {Towards Monosemanticity: Decomposing Language Models With Dictionary Learning},
+  author = {Trenton Bricken and Adly Templeton and Joshua Batson and Brian Chen and Adam Jermyn and Tom Conerly and Nicholas L. Turner and Cem Anil and Carson Denison and Amanda Askell and Robert Lasenby and Yifan Wu and Shauna Kravec and Nicholas Schiefer and Tim Maxwell and Nicholas Joseph and Chris Olah},
+  year = {2023},
+  url = {https://transformer-circuits.pub/2023/monosemantic-features/index.html},
+  journal = {Transformer Circuits Thread},
+  note = {Idea-origin reference for SetConCA project. Major sparse-autoencoder/dictionary-learning monosemanticity reference behind the project's sparse concept code framing.},
+}
+
+@inproceedings{cunningham-etal-2023-sae,
+  title = {Sparse Autoencoders Find Highly Interpretable Features in Language Models},
+  author = {Hoagy Cunningham and Aidan Ewart and Logan Riggs Smith and Robert Huben and Lee Sharkey},
+  year = {2023},
+  url = {https://arxiv.org/abs/2309.08600},
+  doi = {10.48550/arXiv.2309.08600},
+  booktitle = {The Twelfth International Conference on Learning Representations},
+  note = {Idea-origin reference for SetConCA project. Key SAE baseline/reference for extracting interpretable features from language-model activations.},
+}
+
+@inproceedings{gao-etal-2024-scaling-sae,
+  title = {Scaling and Evaluating Sparse Autoencoders},
+  author = {Leo Gao and Tom Dupré la Tour and Henk Tillman and Gabriel Goh and Rajan Troll and Alec Radford and Ilya Sutskever and Jan Leike and Jeffrey Wu},
+  year = {2024},
+  url = {https://arxiv.org/abs/2406.04093},
+  doi = {10.48550/arXiv.2406.04093},
+  booktitle = {The Thirteenth International Conference on Learning Representations},
+  note = {Idea-origin reference for SetConCA project. TopK/k-sparse SAE reference; directly relevant to SetConCA's hard TopK sparsity and pointwise TopK baseline.},
+}
+
+@article{bussmann-leask-nanda-2024-batchtopk,
+  title = {BatchTopK Sparse Autoencoders},
+  author = {Bart Bussmann and Patrick Leask and Neel Nanda},
+  year = {2024},
+  url = {https://arxiv.org/abs/2412.06410},
+  doi = {10.48550/arXiv.2412.06410},
+  journal = {arXiv preprint arXiv:2412.06410},
+  note = {Idea-origin reference for SetConCA project. Referenced in the V2 plan as an SAE/TopK-family baseline direction.},
+}
+
+@article{rajamanoharan-etal-2024-gated-sae,
+  title = {Improving Dictionary Learning with Gated Sparse Autoencoders},
+  author = {Senthooran Rajamanoharan and Arthur Conmy and Lewis Smith and Tom Lieberum and Vikrant Varma and János Kramár and Rohin Shah and Neel Nanda},
+  year = {2024},
+  url = {https://arxiv.org/abs/2404.16014},
+  doi = {10.48550/arXiv.2404.16014},
+  journal = {arXiv preprint arXiv:2404.16014},
+  note = {Idea-origin reference for SetConCA project. Referenced in the V2 plan as a Gated SAE baseline and part of the modern SAE design space.},
+}
+
+@article{rajamanoharan-etal-2024-jumprelu,
+  title = {Jumping Ahead: Improving Reconstruction Fidelity with JumpReLU Sparse Autoencoders},
+  author = {Senthooran Rajamanoharan and Tom Lieberum and Nicolas Sonnerat and Arthur Conmy and Vikrant Varma and János Kramár and Neel Nanda},
+  year = {2024},
+  url = {https://arxiv.org/abs/2407.14435},
+  doi = {10.48550/arXiv.2407.14435},
+  journal = {arXiv preprint arXiv:2407.14435},
+  note = {Idea-origin reference for SetConCA project. Modern SAE baseline reference; useful for comparing TopK/Gated/JumpReLU sparse coding choices.},
+}
+
+@inproceedings{park-choe-veitch-2024-linear-rep,
+  title = {The Linear Representation Hypothesis and the Geometry of Large Language Models},
+  author = {Kiho Park and Yo Joong Choe and Victor Veitch},
+  year = {2024},
+  url = {https://proceedings.mlr.press/v235/park24c.html},
+  booktitle = {Proceedings of the 41st International Conference on Machine Learning},
+  pages = {39643-39666},
+  note = {Idea-origin reference for SetConCA project. Supports the project's linear bridge/linear concept-direction hypothesis and steering-vector framing.},
+}
+
+@article{moschella-etal-2022-relative-representations,
+  title = {Relative Representations Enable Zero-Shot Latent Space Communication},
+  author = {Luca Moschella and Valentino Maiorca and Marco Fumero and Antonio Norelli and Francesco Locatello and Emanuele Rodolà},
+  year = {2022},
+  url = {https://arxiv.org/abs/2209.15430},
+  doi = {10.48550/arXiv.2209.15430},
+  journal = {arXiv preprint arXiv:2209.15430},
+  note = {Idea-origin reference for SetConCA project. Relevant to cross-model latent-space communication and bridgeability across separately trained representation spaces.},
+}
+
+@inproceedings{li-etal-2023-iti,
+  title = {Inference-Time Intervention: Eliciting Truthful Answers from a Language Model},
+  author = {Kenneth Li and Oam Patel and Fernanda Viégas and Hanspeter Pfister and Martin Wattenberg},
+  year = {2023},
+  url = {https://arxiv.org/abs/2306.03341},
+  doi = {10.48550/arXiv.2306.03341},
+  booktitle = {Advances in Neural Information Processing Systems 36},
+  note = {Idea-origin reference for SetConCA project. Activation-intervention reference for the project's generation-time hidden-state steering probes.},
+}
+
+@inproceedings{kim-etal-2018-tcav,
+  title = {Interpretability Beyond Feature Attribution: Quantitative Testing with Concept Activation Vectors (TCAV)},
+  author = {Been Kim and Martin Wattenberg and Justin Gilmer and Carrie Cai and James Wexler and Fernanda Viégas and Rory Sayres},
+  year = {2018},
+  url = {https://proceedings.mlr.press/v80/kim18d.html},
+  booktitle = {Proceedings of the 35th International Conference on Machine Learning},
+  note = {Idea-origin reference for SetConCA project. Early concept-activation-vector reference for interpreting model states with human concepts; related to concept direction inspection.},
+}
+
+@article{aharon-elad-bruckstein-2006-ksvd,
+  title = {K-SVD: An Algorithm for Designing Overcomplete Dictionaries for Sparse Representation},
+  author = {Michal Aharon and Michael Elad and Alfred Bruckstein},
+  year = {2006},
+  url = {https://doi.org/10.1109/TSP.2006.881199},
+  doi = {10.1109/TSP.2006.881199},
+  journal = {IEEE Transactions on Signal Processing},
+  pages = {4311-4322},
+  note = {Idea-origin reference for SetConCA project. Classic dictionary-learning reference behind sparse representation and SAE-style feature dictionaries.},
+}
+
+@article{olshausen-field-1996-sparse-code,
+  title = {Emergence of Simple-Cell Receptive Field Properties by Learning a Sparse Code for Natural Images},
+  author = {Bruno A. Olshausen and David J. Field},
+  year = {1996},
+  url = {https://www.nature.com/articles/381607a0},
+  doi = {10.1038/381607a0},
+  journal = {Nature},
+  pages = {607-609},
+  note = {Idea-origin reference for SetConCA project. Classic sparse-coding origin reference; useful background for why sparsity can recover interpretable features.},
+}
+
+@article{hoerl-kennard-1970-ridge,
+  title = {Ridge Regression: Biased Estimation for Nonorthogonal Problems},
+  author = {Arthur E. Hoerl and Robert W. Kennard},
+  year = {1970},
+  url = {https://doi.org/10.1080/00401706.1970.10488634},
+  doi = {10.1080/00401706.1970.10488634},
+  journal = {Technometrics},
+  pages = {55-67},
+  note = {Idea-origin reference for SetConCA project. Seminal ridge regression paper; ridge is one of the project's main bridge methods.},
+}
+
+@article{schonemann-1966-procrustes,
+  title = {A Generalized Solution of the Orthogonal Procrustes Problem},
+  author = {Peter H. Schönemann},
+  year = {1966},
+  url = {https://doi.org/10.1007/BF02289451},
+  doi = {10.1007/BF02289451},
+  journal = {Psychometrika},
+  pages = {1-10},
+  note = {Idea-origin reference for SetConCA project. Seminal orthogonal Procrustes reference; Procrustes is one of the project's main linear bridge methods.},
+}

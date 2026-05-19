@@ -1,0 +1,48 @@
+{
+  "version": "visual_grounded_sources_v1",
+  "primary_source": "open_images_v7",
+  "sources": [
+    {
+      "source_id": "open_images_v7",
+      "role": "primary",
+      "target_images": 10000,
+      "notes": "Main stratified pool for diverse objects, scenes, relationships, and localized narratives."
+    },
+    {
+      "source_id": "visual_genome",
+      "role": "relationship_addon",
+      "target_images": 2000,
+      "notes": "Dense scene graph and relationship-heavy subset."
+    },
+    {
+      "source_id": "coco",
+      "role": "sanity_baseline",
+      "target_images": 1000,
+      "notes": "Small familiar baseline for pipeline checks."
+    },
+    {
+      "source_id": "xm3600",
+      "role": "optional_multilingual_eval",
+      "target_images": 0,
+      "notes": "Not the main source; useful for multilingual evaluation only."
+    }
+  ],
+  "topic_buckets": [
+    "people_social",
+    "animals",
+    "vehicles_transport",
+    "food_cooking",
+    "sports_actions",
+    "indoor_rooms",
+    "outdoor_nature",
+    "urban_scenes",
+    "tools_objects",
+    "workplaces",
+    "text_signs_documents",
+    "art_posters_illustrations",
+    "multi_object_clutter",
+    "relationship_heavy",
+    "rare_objects"
+  ]
+}
+

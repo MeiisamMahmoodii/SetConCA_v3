@@ -1,0 +1,984 @@
+{
+  "zotero_status": 201,
+  "zotero_response": "",
+  "items": [
+    {
+      "key": "liu-etal-2026-conca",
+      "itemType": "journalArticle",
+      "title": "Concept Component Analysis: A Principled Approach for Concept Extraction in LLMs",
+      "creators": [
+        {
+          "creatorType": "author",
+          "firstName": "Yuhang",
+          "lastName": "Liu"
+        },
+        {
+          "creatorType": "author",
+          "firstName": "Erdun",
+          "lastName": "Gao"
+        },
+        {
+          "creatorType": "author",
+          "firstName": "Dong",
+          "lastName": "Gong"
+        },
+        {
+          "creatorType": "author",
+          "firstName": "Anton",
+          "lastName": "van den Hengel"
+        },
+        {
+          "creatorType": "author",
+          "firstName": "Javen Qinfeng",
+          "lastName": "Shi"
+        }
+      ],
+      "date": "2026",
+      "url": "https://arxiv.org/abs/2601.20420",
+      "DOI": "10.48550/arXiv.2601.20420",
+      "publicationTitle": "arXiv preprint arXiv:2601.20420",
+      "tags": [
+        "SetConCA",
+        "project-reference",
+        "idea-origin",
+        "ConCA",
+        "Sparse ConCA"
+      ],
+      "extra_reason": "Direct source of ConCA/Sparse ConCA: log-posterior concept interpretation and sparse concept extraction used as the base idea for Set-ConCA."
+    },
+    {
+      "key": "liu-2026-set-conca-manuscript",
+      "itemType": "manuscript",
+      "title": "Set-ConCA: Extending Concept Component Analysis from Point Representations to Representation Sets",
+      "creators": [
+        {
+          "creatorType": "author",
+          "firstName": "Yuhang",
+          "lastName": "Liu"
+        }
+      ],
+      "date": "2026-03",
+      "tags": [
+        "SetConCA",
+        "project-reference",
+        "idea-origin",
+        "Set-ConCA",
+        "local manuscript"
+      ],
+      "extra_reason": "Local manuscript/proposal that directly introduces Set-ConCA: representation sets, mean pooling, shared plus residual decoder, and subset consistency.",
+      "archive": "Local file",
+      "archiveLocation": "C:\\Users\\MPC\\Documents\\code\\SetConCA\\set_conca_math.txt"
+    },
+    {
+      "key": "zaheer-etal-2017-deep-sets",
+      "itemType": "conferencePaper",
+      "title": "Deep Sets",
+      "creators": [
+        {
+          "creatorType": "author",
+          "firstName": "Manzil",
+          "lastName": "Zaheer"
+        },
+        {
+          "creatorType": "author",
+          "firstName": "Satwik",
+          "lastName": "Kottur"
+        },
+        {
+          "creatorType": "author",
+          "firstName": "Siamak",
+          "lastName": "Ravanbakhsh"
+        },
+        {
+          "creatorType": "author",
+          "firstName": "Barnabas",
+          "lastName": "Poczos"
+        },
+        {
+          "creatorType": "author",
+          "firstName": "Ruslan",
+          "lastName": "Salakhutdinov"
+        },
+        {
+          "creatorType": "author",
+          "firstName": "Alexander",
+          "lastName": "Smola"
+        }
+      ],
+      "date": "2017",
+      "url": "https://arxiv.org/abs/1703.06114",
+      "DOI": "10.48550/arXiv.1703.06114",
+      "proceedingsTitle": "Advances in Neural Information Processing Systems 30",
+      "tags": [
+        "SetConCA",
+        "project-reference",
+        "idea-origin",
+        "sets",
+        "permutation invariant"
+      ],
+      "extra_reason": "Foundational paper for permutation-invariant set functions; supports Set-ConCA's set aggregation/mean pooling design."
+    },
+    {
+      "key": "ba-kiros-hinton-2016-layernorm",
+      "itemType": "journalArticle",
+      "title": "Layer Normalization",
+      "creators": [
+        {
+          "creatorType": "author",
+          "firstName": "Jimmy Lei",
+          "lastName": "Ba"
+        },
+        {
+          "creatorType": "author",
+          "firstName": "Jamie Ryan",
+          "lastName": "Kiros"
+        },
+        {
+          "creatorType": "author",
+          "firstName": "Geoffrey E.",
+          "lastName": "Hinton"
+        }
+      ],
+      "date": "2016",
+      "url": "https://arxiv.org/abs/1607.06450",
+      "DOI": "10.48550/arXiv.1607.06450",
+      "publicationTitle": "arXiv preprint arXiv:1607.06450",
+      "tags": [
+        "SetConCA",
+        "project-reference",
+        "idea-origin",
+        "LayerNorm"
+      ],
+      "extra_reason": "SetConCA V2 uses LayerNorm after mean pooling in model/setconca_v2.py."
+    },
+    {
+      "key": "oord-li-vinyals-2018-cpc",
+      "itemType": "journalArticle",
+      "title": "Representation Learning with Contrastive Predictive Coding",
+      "creators": [
+        {
+          "creatorType": "author",
+          "firstName": "Aaron",
+          "lastName": "van den Oord"
+        },
+        {
+          "creatorType": "author",
+          "firstName": "Yazhe",
+          "lastName": "Li"
+        },
+        {
+          "creatorType": "author",
+          "firstName": "Oriol",
+          "lastName": "Vinyals"
+        }
+      ],
+      "date": "2018",
+      "url": "https://arxiv.org/abs/1807.03748",
+      "DOI": "10.48550/arXiv.1807.03748",
+      "publicationTitle": "arXiv preprint arXiv:1807.03748",
+      "tags": [
+        "SetConCA",
+        "project-reference",
+        "idea-origin",
+        "InfoNCE",
+        "contrastive learning"
+      ],
+      "extra_reason": "Introduces the InfoNCE contrastive objective family used in training/losses.py for semantic set split alignment."
+    },
+    {
+      "key": "chen-etal-2020-simclr",
+      "itemType": "conferencePaper",
+      "title": "A Simple Framework for Contrastive Learning of Visual Representations",
+      "creators": [
+        {
+          "creatorType": "author",
+          "firstName": "Ting",
+          "lastName": "Chen"
+        },
+        {
+          "creatorType": "author",
+          "firstName": "Simon",
+          "lastName": "Kornblith"
+        },
+        {
+          "creatorType": "author",
+          "firstName": "Mohammad",
+          "lastName": "Norouzi"
+        },
+        {
+          "creatorType": "author",
+          "firstName": "Geoffrey",
+          "lastName": "Hinton"
+        }
+      ],
+      "date": "2020",
+      "url": "https://proceedings.mlr.press/v119/chen20j.html",
+      "proceedingsTitle": "Proceedings of the 37th International Conference on Machine Learning",
+      "pages": "1597-1607",
+      "tags": [
+        "SetConCA",
+        "project-reference",
+        "idea-origin",
+        "contrastive learning",
+        "views"
+      ],
+      "extra_reason": "Canonical modern contrastive-learning reference for alignment of augmented views; conceptually close to SetConCA's paraphrase-view contrastive loss."
+    },
+    {
+      "key": "elhage-etal-2022-superposition",
+      "itemType": "webpage",
+      "title": "Toy Models of Superposition",
+      "creators": [
+        {
+          "creatorType": "author",
+          "firstName": "Nelson",
+          "lastName": "Elhage"
+        },
+        {
+          "creatorType": "author",
+          "firstName": "Tristan",
+          "lastName": "Hume"
+        },
+        {
+          "creatorType": "author",
+          "firstName": "Catherine",
+          "lastName": "Olsson"
+        },
+        {
+          "creatorType": "author",
+          "firstName": "Nicholas",
+          "lastName": "Schiefer"
+        },
+        {
+          "creatorType": "author",
+          "firstName": "Tom",
+          "lastName": "Henighan"
+        },
+        {
+          "creatorType": "author",
+          "firstName": "Shauna",
+          "lastName": "Kravec"
+        },
+        {
+          "creatorType": "author",
+          "firstName": "Zac",
+          "lastName": "Hatfield-Dodds"
+        },
+        {
+          "creatorType": "author",
+          "firstName": "Robert",
+          "lastName": "Lasenby"
+        },
+        {
+          "creatorType": "author",
+          "firstName": "Dawn",
+          "lastName": "Drain"
+        },
+        {
+          "creatorType": "author",
+          "firstName": "Carol",
+          "lastName": "Chen"
+        },
+        {
+          "creatorType": "author",
+          "firstName": "Roger",
+          "lastName": "Grosse"
+        },
+        {
+          "creatorType": "author",
+          "firstName": "Sam",
+          "lastName": "McCandlish"
+        },
+        {
+          "creatorType": "author",
+          "firstName": "Jared",
+          "lastName": "Kaplan"
+        },
+        {
+          "creatorType": "author",
+          "firstName": "Dario",
+          "lastName": "Amodei"
+        },
+        {
+          "creatorType": "author",
+          "firstName": "Martin",
+          "lastName": "Wattenberg"
+        },
+        {
+          "creatorType": "author",
+          "firstName": "Christopher",
+          "lastName": "Olah"
+        }
+      ],
+      "date": "2022",
+      "url": "https://transformer-circuits.pub/2022/toy_model/index.html",
+      "publicationTitle": "Transformer Circuits Thread",
+      "tags": [
+        "SetConCA",
+        "project-reference",
+        "idea-origin",
+        "superposition",
+        "mechanistic interpretability"
+      ],
+      "extra_reason": "Motivates sparse feature extraction and monosemanticity by explaining superposition/polysemanticity."
+    },
+    {
+      "key": "bricken-etal-2023-monosemanticity",
+      "itemType": "webpage",
+      "title": "Towards Monosemanticity: Decomposing Language Models With Dictionary Learning",
+      "creators": [
+        {
+          "creatorType": "author",
+          "firstName": "Trenton",
+          "lastName": "Bricken"
+        },
+        {
+          "creatorType": "author",
+          "firstName": "Adly",
+          "lastName": "Templeton"
+        },
+        {
+          "creatorType": "author",
+          "firstName": "Joshua",
+          "lastName": "Batson"
+        },
+        {
+          "creatorType": "author",
+          "firstName": "Brian",
+          "lastName": "Chen"
+        },
+        {
+          "creatorType": "author",
+          "firstName": "Adam",
+          "lastName": "Jermyn"
+        },
+        {
+          "creatorType": "author",
+          "firstName": "Tom",
+          "lastName": "Conerly"
+        },
+        {
+          "creatorType": "author",
+          "firstName": "Nicholas L.",
+          "lastName": "Turner"
+        },
+        {
+          "creatorType": "author",
+          "firstName": "Cem",
+          "lastName": "Anil"
+        },
+        {
+          "creatorType": "author",
+          "firstName": "Carson",
+          "lastName": "Denison"
+        },
+        {
+          "creatorType": "author",
+          "firstName": "Amanda",
+          "lastName": "Askell"
+        },
+        {
+          "creatorType": "author",
+          "firstName": "Robert",
+          "lastName": "Lasenby"
+        },
+        {
+          "creatorType": "author",
+          "firstName": "Yifan",
+          "lastName": "Wu"
+        },
+        {
+          "creatorType": "author",
+          "firstName": "Shauna",
+          "lastName": "Kravec"
+        },
+        {
+          "creatorType": "author",
+          "firstName": "Nicholas",
+          "lastName": "Schiefer"
+        },
+        {
+          "creatorType": "author",
+          "firstName": "Tim",
+          "lastName": "Maxwell"
+        },
+        {
+          "creatorType": "author",
+          "firstName": "Nicholas",
+          "lastName": "Joseph"
+        },
+        {
+          "creatorType": "author",
+          "firstName": "Chris",
+          "lastName": "Olah"
+        }
+      ],
+      "date": "2023",
+      "url": "https://transformer-circuits.pub/2023/monosemantic-features/index.html",
+      "publicationTitle": "Transformer Circuits Thread",
+      "tags": [
+        "SetConCA",
+        "project-reference",
+        "idea-origin",
+        "monosemanticity",
+        "dictionary learning",
+        "SAE"
+      ],
+      "extra_reason": "Major sparse-autoencoder/dictionary-learning monosemanticity reference behind the project's sparse concept code framing."
+    },
+    {
+      "key": "cunningham-etal-2023-sae",
+      "itemType": "conferencePaper",
+      "title": "Sparse Autoencoders Find Highly Interpretable Features in Language Models",
+      "creators": [
+        {
+          "creatorType": "author",
+          "firstName": "Hoagy",
+          "lastName": "Cunningham"
+        },
+        {
+          "creatorType": "author",
+          "firstName": "Aidan",
+          "lastName": "Ewart"
+        },
+        {
+          "creatorType": "author",
+          "firstName": "Logan Riggs",
+          "lastName": "Smith"
+        },
+        {
+          "creatorType": "author",
+          "firstName": "Robert",
+          "lastName": "Huben"
+        },
+        {
+          "creatorType": "author",
+          "firstName": "Lee",
+          "lastName": "Sharkey"
+        }
+      ],
+      "date": "2023",
+      "url": "https://arxiv.org/abs/2309.08600",
+      "DOI": "10.48550/arXiv.2309.08600",
+      "proceedingsTitle": "The Twelfth International Conference on Learning Representations",
+      "tags": [
+        "SetConCA",
+        "project-reference",
+        "idea-origin",
+        "SAE",
+        "dictionary learning"
+      ],
+      "extra_reason": "Key SAE baseline/reference for extracting interpretable features from language-model activations."
+    },
+    {
+      "key": "gao-etal-2024-scaling-sae",
+      "itemType": "conferencePaper",
+      "title": "Scaling and Evaluating Sparse Autoencoders",
+      "creators": [
+        {
+          "creatorType": "author",
+          "firstName": "Leo",
+          "lastName": "Gao"
+        },
+        {
+          "creatorType": "author",
+          "firstName": "Tom Dupré",
+          "lastName": "la Tour"
+        },
+        {
+          "creatorType": "author",
+          "firstName": "Henk",
+          "lastName": "Tillman"
+        },
+        {
+          "creatorType": "author",
+          "firstName": "Gabriel",
+          "lastName": "Goh"
+        },
+        {
+          "creatorType": "author",
+          "firstName": "Rajan",
+          "lastName": "Troll"
+        },
+        {
+          "creatorType": "author",
+          "firstName": "Alec",
+          "lastName": "Radford"
+        },
+        {
+          "creatorType": "author",
+          "firstName": "Ilya",
+          "lastName": "Sutskever"
+        },
+        {
+          "creatorType": "author",
+          "firstName": "Jan",
+          "lastName": "Leike"
+        },
+        {
+          "creatorType": "author",
+          "firstName": "Jeffrey",
+          "lastName": "Wu"
+        }
+      ],
+      "date": "2024",
+      "url": "https://arxiv.org/abs/2406.04093",
+      "DOI": "10.48550/arXiv.2406.04093",
+      "proceedingsTitle": "The Thirteenth International Conference on Learning Representations",
+      "tags": [
+        "SetConCA",
+        "project-reference",
+        "idea-origin",
+        "TopK",
+        "SAE"
+      ],
+      "extra_reason": "TopK/k-sparse SAE reference; directly relevant to SetConCA's hard TopK sparsity and pointwise TopK baseline."
+    },
+    {
+      "key": "bussmann-leask-nanda-2024-batchtopk",
+      "itemType": "journalArticle",
+      "title": "BatchTopK Sparse Autoencoders",
+      "creators": [
+        {
+          "creatorType": "author",
+          "firstName": "Bart",
+          "lastName": "Bussmann"
+        },
+        {
+          "creatorType": "author",
+          "firstName": "Patrick",
+          "lastName": "Leask"
+        },
+        {
+          "creatorType": "author",
+          "firstName": "Neel",
+          "lastName": "Nanda"
+        }
+      ],
+      "date": "2024",
+      "url": "https://arxiv.org/abs/2412.06410",
+      "DOI": "10.48550/arXiv.2412.06410",
+      "publicationTitle": "arXiv preprint arXiv:2412.06410",
+      "tags": [
+        "SetConCA",
+        "project-reference",
+        "idea-origin",
+        "BatchTopK",
+        "SAE"
+      ],
+      "extra_reason": "Referenced in the V2 plan as an SAE/TopK-family baseline direction."
+    },
+    {
+      "key": "rajamanoharan-etal-2024-gated-sae",
+      "itemType": "journalArticle",
+      "title": "Improving Dictionary Learning with Gated Sparse Autoencoders",
+      "creators": [
+        {
+          "creatorType": "author",
+          "firstName": "Senthooran",
+          "lastName": "Rajamanoharan"
+        },
+        {
+          "creatorType": "author",
+          "firstName": "Arthur",
+          "lastName": "Conmy"
+        },
+        {
+          "creatorType": "author",
+          "firstName": "Lewis",
+          "lastName": "Smith"
+        },
+        {
+          "creatorType": "author",
+          "firstName": "Tom",
+          "lastName": "Lieberum"
+        },
+        {
+          "creatorType": "author",
+          "firstName": "Vikrant",
+          "lastName": "Varma"
+        },
+        {
+          "creatorType": "author",
+          "firstName": "János",
+          "lastName": "Kramár"
+        },
+        {
+          "creatorType": "author",
+          "firstName": "Rohin",
+          "lastName": "Shah"
+        },
+        {
+          "creatorType": "author",
+          "firstName": "Neel",
+          "lastName": "Nanda"
+        }
+      ],
+      "date": "2024",
+      "url": "https://arxiv.org/abs/2404.16014",
+      "DOI": "10.48550/arXiv.2404.16014",
+      "publicationTitle": "arXiv preprint arXiv:2404.16014",
+      "tags": [
+        "SetConCA",
+        "project-reference",
+        "idea-origin",
+        "Gated SAE",
+        "SAE"
+      ],
+      "extra_reason": "Referenced in the V2 plan as a Gated SAE baseline and part of the modern SAE design space."
+    },
+    {
+      "key": "rajamanoharan-etal-2024-jumprelu",
+      "itemType": "journalArticle",
+      "title": "Jumping Ahead: Improving Reconstruction Fidelity with JumpReLU Sparse Autoencoders",
+      "creators": [
+        {
+          "creatorType": "author",
+          "firstName": "Senthooran",
+          "lastName": "Rajamanoharan"
+        },
+        {
+          "creatorType": "author",
+          "firstName": "Tom",
+          "lastName": "Lieberum"
+        },
+        {
+          "creatorType": "author",
+          "firstName": "Nicolas",
+          "lastName": "Sonnerat"
+        },
+        {
+          "creatorType": "author",
+          "firstName": "Arthur",
+          "lastName": "Conmy"
+        },
+        {
+          "creatorType": "author",
+          "firstName": "Vikrant",
+          "lastName": "Varma"
+        },
+        {
+          "creatorType": "author",
+          "firstName": "János",
+          "lastName": "Kramár"
+        },
+        {
+          "creatorType": "author",
+          "firstName": "Neel",
+          "lastName": "Nanda"
+        }
+      ],
+      "date": "2024",
+      "url": "https://arxiv.org/abs/2407.14435",
+      "DOI": "10.48550/arXiv.2407.14435",
+      "publicationTitle": "arXiv preprint arXiv:2407.14435",
+      "tags": [
+        "SetConCA",
+        "project-reference",
+        "idea-origin",
+        "JumpReLU",
+        "SAE"
+      ],
+      "extra_reason": "Modern SAE baseline reference; useful for comparing TopK/Gated/JumpReLU sparse coding choices."
+    },
+    {
+      "key": "park-choe-veitch-2024-linear-rep",
+      "itemType": "conferencePaper",
+      "title": "The Linear Representation Hypothesis and the Geometry of Large Language Models",
+      "creators": [
+        {
+          "creatorType": "author",
+          "firstName": "Kiho",
+          "lastName": "Park"
+        },
+        {
+          "creatorType": "author",
+          "firstName": "Yo Joong",
+          "lastName": "Choe"
+        },
+        {
+          "creatorType": "author",
+          "firstName": "Victor",
+          "lastName": "Veitch"
+        }
+      ],
+      "date": "2024",
+      "url": "https://proceedings.mlr.press/v235/park24c.html",
+      "proceedingsTitle": "Proceedings of the 41st International Conference on Machine Learning",
+      "pages": "39643-39666",
+      "tags": [
+        "SetConCA",
+        "project-reference",
+        "idea-origin",
+        "linear representations",
+        "steering"
+      ],
+      "extra_reason": "Supports the project's linear bridge/linear concept-direction hypothesis and steering-vector framing."
+    },
+    {
+      "key": "moschella-etal-2022-relative-representations",
+      "itemType": "journalArticle",
+      "title": "Relative Representations Enable Zero-Shot Latent Space Communication",
+      "creators": [
+        {
+          "creatorType": "author",
+          "firstName": "Luca",
+          "lastName": "Moschella"
+        },
+        {
+          "creatorType": "author",
+          "firstName": "Valentino",
+          "lastName": "Maiorca"
+        },
+        {
+          "creatorType": "author",
+          "firstName": "Marco",
+          "lastName": "Fumero"
+        },
+        {
+          "creatorType": "author",
+          "firstName": "Antonio",
+          "lastName": "Norelli"
+        },
+        {
+          "creatorType": "author",
+          "firstName": "Francesco",
+          "lastName": "Locatello"
+        },
+        {
+          "creatorType": "author",
+          "firstName": "Emanuele",
+          "lastName": "Rodolà"
+        }
+      ],
+      "date": "2022",
+      "url": "https://arxiv.org/abs/2209.15430",
+      "DOI": "10.48550/arXiv.2209.15430",
+      "publicationTitle": "arXiv preprint arXiv:2209.15430",
+      "tags": [
+        "SetConCA",
+        "project-reference",
+        "idea-origin",
+        "latent space",
+        "bridging"
+      ],
+      "extra_reason": "Relevant to cross-model latent-space communication and bridgeability across separately trained representation spaces."
+    },
+    {
+      "key": "li-etal-2023-iti",
+      "itemType": "conferencePaper",
+      "title": "Inference-Time Intervention: Eliciting Truthful Answers from a Language Model",
+      "creators": [
+        {
+          "creatorType": "author",
+          "firstName": "Kenneth",
+          "lastName": "Li"
+        },
+        {
+          "creatorType": "author",
+          "firstName": "Oam",
+          "lastName": "Patel"
+        },
+        {
+          "creatorType": "author",
+          "firstName": "Fernanda",
+          "lastName": "Viégas"
+        },
+        {
+          "creatorType": "author",
+          "firstName": "Hanspeter",
+          "lastName": "Pfister"
+        },
+        {
+          "creatorType": "author",
+          "firstName": "Martin",
+          "lastName": "Wattenberg"
+        }
+      ],
+      "date": "2023",
+      "url": "https://arxiv.org/abs/2306.03341",
+      "DOI": "10.48550/arXiv.2306.03341",
+      "proceedingsTitle": "Advances in Neural Information Processing Systems 36",
+      "tags": [
+        "SetConCA",
+        "project-reference",
+        "idea-origin",
+        "activation steering",
+        "ITI"
+      ],
+      "extra_reason": "Activation-intervention reference for the project's generation-time hidden-state steering probes."
+    },
+    {
+      "key": "kim-etal-2018-tcav",
+      "itemType": "conferencePaper",
+      "title": "Interpretability Beyond Feature Attribution: Quantitative Testing with Concept Activation Vectors (TCAV)",
+      "creators": [
+        {
+          "creatorType": "author",
+          "firstName": "Been",
+          "lastName": "Kim"
+        },
+        {
+          "creatorType": "author",
+          "firstName": "Martin",
+          "lastName": "Wattenberg"
+        },
+        {
+          "creatorType": "author",
+          "firstName": "Justin",
+          "lastName": "Gilmer"
+        },
+        {
+          "creatorType": "author",
+          "firstName": "Carrie",
+          "lastName": "Cai"
+        },
+        {
+          "creatorType": "author",
+          "firstName": "James",
+          "lastName": "Wexler"
+        },
+        {
+          "creatorType": "author",
+          "firstName": "Fernanda",
+          "lastName": "Viégas"
+        },
+        {
+          "creatorType": "author",
+          "firstName": "Rory",
+          "lastName": "Sayres"
+        }
+      ],
+      "date": "2018",
+      "url": "https://proceedings.mlr.press/v80/kim18d.html",
+      "proceedingsTitle": "Proceedings of the 35th International Conference on Machine Learning",
+      "tags": [
+        "SetConCA",
+        "project-reference",
+        "idea-origin",
+        "TCAV",
+        "concept vectors"
+      ],
+      "extra_reason": "Early concept-activation-vector reference for interpreting model states with human concepts; related to concept direction inspection."
+    },
+    {
+      "key": "aharon-elad-bruckstein-2006-ksvd",
+      "itemType": "journalArticle",
+      "title": "K-SVD: An Algorithm for Designing Overcomplete Dictionaries for Sparse Representation",
+      "creators": [
+        {
+          "creatorType": "author",
+          "firstName": "Michal",
+          "lastName": "Aharon"
+        },
+        {
+          "creatorType": "author",
+          "firstName": "Michael",
+          "lastName": "Elad"
+        },
+        {
+          "creatorType": "author",
+          "firstName": "Alfred",
+          "lastName": "Bruckstein"
+        }
+      ],
+      "date": "2006",
+      "url": "https://doi.org/10.1109/TSP.2006.881199",
+      "DOI": "10.1109/TSP.2006.881199",
+      "publicationTitle": "IEEE Transactions on Signal Processing",
+      "pages": "4311-4322",
+      "tags": [
+        "SetConCA",
+        "project-reference",
+        "idea-origin",
+        "dictionary learning",
+        "sparse coding"
+      ],
+      "extra_reason": "Classic dictionary-learning reference behind sparse representation and SAE-style feature dictionaries."
+    },
+    {
+      "key": "olshausen-field-1996-sparse-code",
+      "itemType": "journalArticle",
+      "title": "Emergence of Simple-Cell Receptive Field Properties by Learning a Sparse Code for Natural Images",
+      "creators": [
+        {
+          "creatorType": "author",
+          "firstName": "Bruno A.",
+          "lastName": "Olshausen"
+        },
+        {
+          "creatorType": "author",
+          "firstName": "David J.",
+          "lastName": "Field"
+        }
+      ],
+      "date": "1996",
+      "url": "https://www.nature.com/articles/381607a0",
+      "DOI": "10.1038/381607a0",
+      "publicationTitle": "Nature",
+      "pages": "607-609",
+      "tags": [
+        "SetConCA",
+        "project-reference",
+        "idea-origin",
+        "sparse coding"
+      ],
+      "extra_reason": "Classic sparse-coding origin reference; useful background for why sparsity can recover interpretable features."
+    },
+    {
+      "key": "hoerl-kennard-1970-ridge",
+      "itemType": "journalArticle",
+      "title": "Ridge Regression: Biased Estimation for Nonorthogonal Problems",
+      "creators": [
+        {
+          "creatorType": "author",
+          "firstName": "Arthur E.",
+          "lastName": "Hoerl"
+        },
+        {
+          "creatorType": "author",
+          "firstName": "Robert W.",
+          "lastName": "Kennard"
+        }
+      ],
+      "date": "1970",
+      "url": "https://doi.org/10.1080/00401706.1970.10488634",
+      "DOI": "10.1080/00401706.1970.10488634",
+      "publicationTitle": "Technometrics",
+      "pages": "55-67",
+      "tags": [
+        "SetConCA",
+        "project-reference",
+        "idea-origin",
+        "ridge",
+        "bridge"
+      ],
+      "extra_reason": "Seminal ridge regression paper; ridge is one of the project's main bridge methods."
+    },
+    {
+      "key": "schonemann-1966-procrustes",
+      "itemType": "journalArticle",
+      "title": "A Generalized Solution of the Orthogonal Procrustes Problem",
+      "creators": [
+        {
+          "creatorType": "author",
+          "firstName": "Peter H.",
+          "lastName": "Schönemann"
+        }
+      ],
+      "date": "1966",
+      "url": "https://doi.org/10.1007/BF02289451",
+      "DOI": "10.1007/BF02289451",
+      "publicationTitle": "Psychometrika",
+      "pages": "1-10",
+      "tags": [
+        "SetConCA",
+        "project-reference",
+        "idea-origin",
+        "Procrustes",
+        "bridge"
+      ],
+      "extra_reason": "Seminal orthogonal Procrustes reference; Procrustes is one of the project's main linear bridge methods."
+    }
+  ]
+}

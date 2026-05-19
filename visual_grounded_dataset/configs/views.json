@@ -1,0 +1,38 @@
+{
+  "version": "prompt_views_v2_diverse_lenses",
+  "views": [
+    {
+      "view_id": "literal_scene",
+      "instruction": "Describe only the literal visible content: main people, objects, setting, and actions. Avoid interpretation."
+    },
+    {
+      "view_id": "spatial_layout",
+      "instruction": "Explain where the main things are relative to each other. Focus on layout, distance, foreground, background, and orientation."
+    },
+    {
+      "view_id": "action_event",
+      "instruction": "Describe the image as an event. Focus on verbs, interactions, and what is visibly happening."
+    },
+    {
+      "view_id": "causal_before_after",
+      "instruction": "Infer what likely happened just before this moment and what may happen next. Use cautious wording for uncertain parts."
+    },
+    {
+      "view_id": "function_affordance",
+      "instruction": "Explain what the visible objects, place, or arrangement are likely used for. Ground each function in visible evidence."
+    },
+    {
+      "view_id": "mood_atmosphere",
+      "instruction": "Describe the mood, tone, lighting, and atmosphere. Do not invent private thoughts or identities."
+    },
+    {
+      "view_id": "risk_problem",
+      "instruction": "Describe any visible risks, problems, hazards, damage, disorder, or uncertainty. If none are visible, say what makes the scene appear ordinary."
+    },
+    {
+      "view_id": "child_explanation",
+      "instruction": "Explain the image to a child using simple words, while staying faithful to what is visible."
+    }
+  ],
+  "template": "You are inspecting an image directly. Write the answer in {language_name} only.\n\nLens: {view_id}\nTask: {view_instruction}\n\nRules:\n- Ground every claim in visible evidence.\n- Do not mention filenames, datasets, prompts, or AI.\n- Do not begin with phrases equivalent to \"The image shows\".\n- Avoid generic caption phrasing when possible.\n- Prefer concrete nouns and verbs.\n- Use 1 to 3 concise sentences.\n- If asked to infer, use cautious words such as \"likely\", \"appears\", or their natural equivalent in {language_name}."
+}

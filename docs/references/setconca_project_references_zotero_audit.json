@@ -1,0 +1,861 @@
+{
+  "zotero_status": 201,
+  "zotero_response": "",
+  "already_added_before_batch": {
+    "key": "zhang-zhao-lecun-2015-charcnn",
+    "itemType": "conferencePaper",
+    "title": "Character-level Convolutional Networks for Text Classification",
+    "creators": [
+      {
+        "creatorType": "author",
+        "firstName": "Xiang",
+        "lastName": "Zhang"
+      },
+      {
+        "creatorType": "author",
+        "firstName": "Junbo",
+        "lastName": "Zhao"
+      },
+      {
+        "creatorType": "author",
+        "firstName": "Yann",
+        "lastName": "LeCun"
+      }
+    ],
+    "date": "2015",
+    "proceedingsTitle": "Advances in Neural Information Processing Systems 28",
+    "url": "https://arxiv.org/abs/1509.01626",
+    "archive": "arXiv",
+    "archiveLocation": "1509.01626",
+    "tags": [
+      "SetConCA",
+      "project-reference",
+      "AG News",
+      "dataset"
+    ],
+    "source_files": [
+      "docs/progress/2026-05-06_fresh_ag_news_dataset.md",
+      "docs/progress/guides/data_pipeline/raw_json_to_dataset_guide.md"
+    ]
+  },
+  "batch_added": [
+    {
+      "key": "williams-etal-2017-multinli",
+      "itemType": "journalArticle",
+      "title": "A Broad-Coverage Challenge Corpus for Sentence Understanding through Inference",
+      "creators": [
+        {
+          "creatorType": "author",
+          "firstName": "Adina",
+          "lastName": "Williams"
+        },
+        {
+          "creatorType": "author",
+          "firstName": "Nikita",
+          "lastName": "Nangia"
+        },
+        {
+          "creatorType": "author",
+          "firstName": "Samuel R.",
+          "lastName": "Bowman"
+        }
+      ],
+      "date": "2017",
+      "publicationTitle": "arXiv preprint arXiv:1704.05426",
+      "url": "https://arxiv.org/abs/1704.05426",
+      "archive": "arXiv",
+      "archiveLocation": "1704.05426",
+      "tags": [
+        "SetConCA",
+        "project-reference",
+        "NLI",
+        "dataset"
+      ],
+      "source_files": [
+        "docs/progress/2026-05-06_constrained_paraphrase_pipeline.md",
+        "docs/progress/guides/data_pipeline/raw_json_to_dataset_guide.md"
+      ]
+    },
+    {
+      "key": "reimers-gurevych-2019-sbert",
+      "itemType": "conferencePaper",
+      "title": "Sentence-BERT: Sentence Embeddings using Siamese BERT-Networks",
+      "creators": [
+        {
+          "creatorType": "author",
+          "firstName": "Nils",
+          "lastName": "Reimers"
+        },
+        {
+          "creatorType": "author",
+          "firstName": "Iryna",
+          "lastName": "Gurevych"
+        }
+      ],
+      "date": "2019",
+      "proceedingsTitle": "Proceedings of the 2019 Conference on Empirical Methods in Natural Language Processing",
+      "url": "https://arxiv.org/abs/1908.10084",
+      "archive": "arXiv",
+      "archiveLocation": "1908.10084",
+      "tags": [
+        "SetConCA",
+        "project-reference",
+        "semantic validation",
+        "embeddings"
+      ],
+      "source_files": [
+        "docs/progress/2026-05-06_constrained_paraphrase_pipeline.md",
+        "docs/progress/guides/data_pipeline/raw_json_to_dataset_guide.md"
+      ]
+    },
+    {
+      "key": "brown-etal-2020-gpt3",
+      "itemType": "conferencePaper",
+      "title": "Language Models are Few-Shot Learners",
+      "creators": [
+        {
+          "creatorType": "author",
+          "firstName": "Tom B.",
+          "lastName": "Brown"
+        },
+        {
+          "creatorType": "author",
+          "firstName": "Benjamin",
+          "lastName": "Mann"
+        },
+        {
+          "creatorType": "author",
+          "firstName": "Nick",
+          "lastName": "Ryder"
+        },
+        {
+          "creatorType": "author",
+          "firstName": "Melanie",
+          "lastName": "Subbiah"
+        },
+        {
+          "creatorType": "author",
+          "firstName": "Jared",
+          "lastName": "Kaplan"
+        },
+        {
+          "creatorType": "author",
+          "firstName": "Prafulla",
+          "lastName": "Dhariwal"
+        },
+        {
+          "creatorType": "author",
+          "firstName": "Arvind",
+          "lastName": "Neelakantan"
+        },
+        {
+          "creatorType": "author",
+          "firstName": "Pranav",
+          "lastName": "Shyam"
+        },
+        {
+          "creatorType": "author",
+          "firstName": "Girish",
+          "lastName": "Sastry"
+        },
+        {
+          "creatorType": "author",
+          "firstName": "Amanda",
+          "lastName": "Askell"
+        }
+      ],
+      "date": "2020",
+      "proceedingsTitle": "Advances in Neural Information Processing Systems 33",
+      "url": "https://arxiv.org/abs/2006.15704",
+      "archive": "arXiv",
+      "archiveLocation": "2006.15704",
+      "tags": [
+        "SetConCA",
+        "project-reference",
+        "language models"
+      ],
+      "source_files": [
+        "docs/progress/2026-05-07_multi_gpu_server_usage_guide.md",
+        "docs/progress/guides/server/multi_gpu_server_usage_guide.md"
+      ]
+    },
+    {
+      "key": "kwon-etal-2023-vllm",
+      "itemType": "journalArticle",
+      "title": "Efficient Memory Management for Large Language Model Serving with PagedAttention",
+      "creators": [
+        {
+          "creatorType": "author",
+          "firstName": "Woosuk",
+          "lastName": "Kwon"
+        },
+        {
+          "creatorType": "author",
+          "firstName": "Zhuohan",
+          "lastName": "Li"
+        },
+        {
+          "creatorType": "author",
+          "firstName": "Siyuan",
+          "lastName": "Zhuang"
+        },
+        {
+          "creatorType": "author",
+          "firstName": "Ying",
+          "lastName": "Sheng"
+        },
+        {
+          "creatorType": "author",
+          "firstName": "Lianmin",
+          "lastName": "Zheng"
+        },
+        {
+          "creatorType": "author",
+          "firstName": "Cody Hao",
+          "lastName": "Yu"
+        },
+        {
+          "creatorType": "author",
+          "firstName": "Joseph E.",
+          "lastName": "Gonzalez"
+        },
+        {
+          "creatorType": "author",
+          "firstName": "Hao",
+          "lastName": "Zhang"
+        },
+        {
+          "creatorType": "author",
+          "firstName": "Ion",
+          "lastName": "Stoica"
+        }
+      ],
+      "date": "2023",
+      "publicationTitle": "arXiv preprint arXiv:2309.06180",
+      "DOI": "10.48550/arXiv.2309.06180",
+      "url": "https://arxiv.org/abs/2309.06180",
+      "archive": "arXiv",
+      "archiveLocation": "2309.06180",
+      "tags": [
+        "SetConCA",
+        "project-reference",
+        "vLLM",
+        "inference"
+      ],
+      "source_files": [
+        "docs/progress/2026-05-07_multi_gpu_server_usage_guide.md",
+        "docs/progress/guides/server/multi_gpu_server_usage_guide.md"
+      ]
+    },
+    {
+      "key": "zhang-etal-2019-paws",
+      "itemType": "journalArticle",
+      "title": "PAWS: Paraphrase Adversaries from Word Scrambling",
+      "creators": [
+        {
+          "creatorType": "author",
+          "firstName": "Yuan",
+          "lastName": "Zhang"
+        },
+        {
+          "creatorType": "author",
+          "firstName": "Jason",
+          "lastName": "Baldridge"
+        },
+        {
+          "creatorType": "author",
+          "firstName": "Luheng",
+          "lastName": "He"
+        }
+      ],
+      "date": "2019",
+      "publicationTitle": "arXiv preprint arXiv:1904.01130",
+      "url": "https://arxiv.org/abs/1904.01130",
+      "archive": "arXiv",
+      "archiveLocation": "1904.01130",
+      "tags": [
+        "SetConCA",
+        "project-reference",
+        "paraphrase",
+        "dataset"
+      ],
+      "source_files": [
+        "docs/DATASET_PROJECT_PLAN.md"
+      ]
+    },
+    {
+      "key": "lin-etal-2021-truthfulqa",
+      "itemType": "journalArticle",
+      "title": "TruthfulQA: Measuring How Models Mimic Human Falsehoods",
+      "creators": [
+        {
+          "creatorType": "author",
+          "firstName": "Stephanie",
+          "lastName": "Lin"
+        },
+        {
+          "creatorType": "author",
+          "firstName": "Jacob",
+          "lastName": "Hilton"
+        },
+        {
+          "creatorType": "author",
+          "firstName": "Owain",
+          "lastName": "Evans"
+        }
+      ],
+      "date": "2021",
+      "publicationTitle": "arXiv preprint arXiv:2109.07958",
+      "url": "https://openai.com/index/truthfulqa/",
+      "archive": "arXiv",
+      "archiveLocation": "2109.07958",
+      "tags": [
+        "SetConCA",
+        "project-reference",
+        "truthfulness",
+        "benchmark"
+      ],
+      "source_files": [
+        "docs/DATASET_PROJECT_PLAN.md"
+      ]
+    },
+    {
+      "key": "rimsky-etal-2024-caa",
+      "itemType": "conferencePaper",
+      "title": "Steering Llama 2 via Contrastive Activation Addition",
+      "creators": [
+        {
+          "creatorType": "author",
+          "firstName": "Nina",
+          "lastName": "Rimsky"
+        },
+        {
+          "creatorType": "author",
+          "firstName": "Nick",
+          "lastName": "Gabrieli"
+        },
+        {
+          "creatorType": "author",
+          "firstName": "Julian",
+          "lastName": "Schulz"
+        },
+        {
+          "creatorType": "author",
+          "firstName": "Meg",
+          "lastName": "Tong"
+        },
+        {
+          "creatorType": "author",
+          "firstName": "Evan",
+          "lastName": "Hubinger"
+        },
+        {
+          "creatorType": "author",
+          "firstName": "Alexander",
+          "lastName": "Turner"
+        }
+      ],
+      "date": "2024-08",
+      "proceedingsTitle": "Proceedings of the 62nd Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers)",
+      "place": "Bangkok, Thailand",
+      "publisher": "Association for Computational Linguistics",
+      "pages": "15504-15522",
+      "DOI": "10.18653/v1/2024.acl-long.828",
+      "url": "https://aclanthology.org/2024.acl-long.828/",
+      "tags": [
+        "SetConCA",
+        "project-reference",
+        "CAA",
+        "steering"
+      ],
+      "source_files": [
+        "docs/DATASET_PROJECT_PLAN.md"
+      ]
+    },
+    {
+      "key": "zou-etal-2023-repe",
+      "itemType": "journalArticle",
+      "title": "Representation Engineering: A Top-Down Approach to AI Transparency",
+      "creators": [
+        {
+          "creatorType": "author",
+          "firstName": "Andy",
+          "lastName": "Zou"
+        },
+        {
+          "creatorType": "author",
+          "firstName": "Long",
+          "lastName": "Phan"
+        },
+        {
+          "creatorType": "author",
+          "firstName": "Sarah Li",
+          "lastName": "Chen"
+        },
+        {
+          "creatorType": "author",
+          "firstName": "James",
+          "lastName": "Campbell"
+        },
+        {
+          "creatorType": "author",
+          "firstName": "Phillip",
+          "lastName": "Guo"
+        },
+        {
+          "creatorType": "author",
+          "firstName": "Richard",
+          "lastName": "Ren"
+        },
+        {
+          "creatorType": "author",
+          "firstName": "Alexander",
+          "lastName": "Pan"
+        },
+        {
+          "creatorType": "author",
+          "firstName": "Xuwang",
+          "lastName": "Yin"
+        },
+        {
+          "creatorType": "author",
+          "firstName": "Mantas",
+          "lastName": "Mazeika"
+        },
+        {
+          "creatorType": "author",
+          "firstName": "Ann-Kathrin",
+          "lastName": "Dombrowski"
+        }
+      ],
+      "date": "2023",
+      "publicationTitle": "arXiv preprint arXiv:2310.01405",
+      "DOI": "10.48550/arXiv.2310.01405",
+      "url": "https://arxiv.org/abs/2310.01405",
+      "archive": "arXiv",
+      "archiveLocation": "2310.01405",
+      "tags": [
+        "SetConCA",
+        "project-reference",
+        "RepE",
+        "steering",
+        "interpretability"
+      ],
+      "source_files": [
+        "docs/DATASET_PROJECT_PLAN.md"
+      ]
+    },
+    {
+      "key": "hotpotqa-dataset-card",
+      "itemType": "webpage",
+      "title": "HotpotQA dataset card",
+      "url": "https://huggingface.co/datasets/hotpotqa/hotpot_qa",
+      "websiteTitle": "Project reference",
+      "date": "2026",
+      "tags": [
+        "SetConCA",
+        "project-reference",
+        "dataset",
+        "HotpotQA"
+      ],
+      "source_files": [
+        "docs/DATASET_PROJECT_PLAN.md"
+      ]
+    },
+    {
+      "key": "fever-dataset-card",
+      "itemType": "webpage",
+      "title": "FEVER dataset card",
+      "url": "https://huggingface.co/datasets/fever/fever",
+      "websiteTitle": "Project reference",
+      "date": "2026",
+      "tags": [
+        "SetConCA",
+        "project-reference",
+        "dataset",
+        "FEVER"
+      ],
+      "source_files": [
+        "docs/DATASET_PROJECT_PLAN.md"
+      ]
+    },
+    {
+      "key": "feverous-dataset-card",
+      "itemType": "webpage",
+      "title": "FEVEROUS dataset card",
+      "url": "https://huggingface.co/datasets/fever/feverous",
+      "websiteTitle": "Project reference",
+      "date": "2026",
+      "tags": [
+        "SetConCA",
+        "project-reference",
+        "dataset",
+        "FEVEROUS"
+      ],
+      "source_files": [
+        "docs/DATASET_PROJECT_PLAN.md"
+      ]
+    },
+    {
+      "key": "snli-dataset-card",
+      "itemType": "webpage",
+      "title": "SNLI dataset card",
+      "url": "https://huggingface.co/datasets/stanfordnlp/snli",
+      "websiteTitle": "Project reference",
+      "date": "2026",
+      "tags": [
+        "SetConCA",
+        "project-reference",
+        "dataset",
+        "SNLI"
+      ],
+      "source_files": [
+        "docs/DATASET_PROJECT_PLAN.md"
+      ]
+    },
+    {
+      "key": "multinli-dataset-card",
+      "itemType": "webpage",
+      "title": "MultiNLI dataset card",
+      "url": "https://huggingface.co/datasets/nyu-mll/multi_nli",
+      "websiteTitle": "Project reference",
+      "date": "2026",
+      "tags": [
+        "SetConCA",
+        "project-reference",
+        "dataset",
+        "MultiNLI"
+      ],
+      "source_files": [
+        "docs/DATASET_PROJECT_PLAN.md"
+      ]
+    },
+    {
+      "key": "allnli-dataset-card",
+      "itemType": "webpage",
+      "title": "AllNLI dataset card",
+      "url": "https://huggingface.co/datasets/sentence-transformers/all-nli",
+      "websiteTitle": "Project reference",
+      "date": "2026",
+      "tags": [
+        "SetConCA",
+        "project-reference",
+        "dataset",
+        "AllNLI"
+      ],
+      "source_files": [
+        "docs/DATASET_PROJECT_PLAN.md"
+      ]
+    },
+    {
+      "key": "quora-duplicates-dataset-card",
+      "itemType": "webpage",
+      "title": "Quora Duplicates dataset card",
+      "url": "https://huggingface.co/datasets/sentence-transformers/quora-duplicates",
+      "websiteTitle": "Project reference",
+      "date": "2026",
+      "tags": [
+        "SetConCA",
+        "project-reference",
+        "dataset",
+        "Quora"
+      ],
+      "source_files": [
+        "docs/DATASET_PROJECT_PLAN.md"
+      ]
+    },
+    {
+      "key": "bbq-dataset-card",
+      "itemType": "webpage",
+      "title": "BBQ dataset card",
+      "url": "https://huggingface.co/datasets/walledai/BBQ",
+      "websiteTitle": "Project reference",
+      "date": "2026",
+      "tags": [
+        "SetConCA",
+        "project-reference",
+        "dataset",
+        "BBQ",
+        "bias benchmark"
+      ],
+      "source_files": [
+        "docs/DATASET_PROJECT_PLAN.md"
+      ]
+    },
+    {
+      "key": "sycophancyeval-dataset-card",
+      "itemType": "webpage",
+      "title": "SycophancyEval dataset card",
+      "url": "https://huggingface.co/datasets/meg-tong/sycophancy-eval",
+      "websiteTitle": "Project reference",
+      "date": "2026",
+      "tags": [
+        "SetConCA",
+        "project-reference",
+        "dataset",
+        "sycophancy"
+      ],
+      "source_files": [
+        "docs/DATASET_PROJECT_PLAN.md"
+      ]
+    },
+    {
+      "key": "realtoxicityprompts-tensorflow-datasets-card",
+      "itemType": "webpage",
+      "title": "RealToxicityPrompts TensorFlow Datasets card",
+      "url": "https://www.tensorflow.org/datasets/catalog/real_toxicity_prompts",
+      "websiteTitle": "Project reference",
+      "date": "2026",
+      "tags": [
+        "SetConCA",
+        "project-reference",
+        "dataset",
+        "toxicity"
+      ],
+      "source_files": [
+        "docs/DATASET_PROJECT_PLAN.md"
+      ]
+    },
+    {
+      "key": "massive-text-embedding-benchmark--mteb",
+      "itemType": "webpage",
+      "title": "Massive Text Embedding Benchmark (MTEB)",
+      "url": "https://embeddings-benchmark.github.io/mteb/",
+      "websiteTitle": "Project reference",
+      "date": "2026",
+      "tags": [
+        "SetConCA",
+        "project-reference",
+        "benchmark",
+        "embeddings"
+      ],
+      "source_files": [
+        "docs/DATASET_PROJECT_PLAN.md"
+      ]
+    },
+    {
+      "key": "hugging-face-datasets-documentation",
+      "itemType": "webpage",
+      "title": "Hugging Face Datasets documentation",
+      "url": "https://huggingface.co/docs/datasets",
+      "websiteTitle": "Project reference",
+      "date": "2026",
+      "tags": [
+        "SetConCA",
+        "project-reference",
+        "tooling",
+        "datasets"
+      ],
+      "source_files": [
+        "docs/progress/2026-05-06_fresh_ag_news_dataset.md",
+        "docs/progress/guides/data_pipeline/raw_json_to_dataset_guide.md"
+      ]
+    },
+    {
+      "key": "vllm-tensor-parallelism-and-scaling-documentation",
+      "itemType": "webpage",
+      "title": "vLLM tensor parallelism and scaling documentation",
+      "url": "https://docs.vllm.ai/en/latest/serving/parallelism_scaling.html",
+      "websiteTitle": "Project reference",
+      "date": "2026",
+      "tags": [
+        "SetConCA",
+        "project-reference",
+        "tooling",
+        "vLLM",
+        "multi-GPU"
+      ],
+      "source_files": [
+        "docs/progress/guides/server/multi_gpu_server_usage_guide.md"
+      ]
+    },
+    {
+      "key": "vllm-installation-documentation",
+      "itemType": "webpage",
+      "title": "vLLM installation documentation",
+      "url": "https://docs.vllm.ai/en/v0.6.6/getting_started/installation.html",
+      "websiteTitle": "Project reference",
+      "date": "2026",
+      "tags": [
+        "SetConCA",
+        "project-reference",
+        "tooling",
+        "vLLM"
+      ],
+      "source_files": [
+        "docs/progress/guides/server/multi_gpu_server_usage_guide.md"
+      ]
+    },
+    {
+      "key": "nvidia-nccl-documentation",
+      "itemType": "webpage",
+      "title": "NVIDIA NCCL documentation",
+      "url": "https://docs.nvidia.com/deeplearning/nccl/user-guide/docs/",
+      "websiteTitle": "Project reference",
+      "date": "2026",
+      "tags": [
+        "SetConCA",
+        "project-reference",
+        "tooling",
+        "NCCL",
+        "multi-GPU"
+      ],
+      "source_files": [
+        "docs/progress/guides/server/multi_gpu_server_usage_guide.md"
+      ]
+    },
+    {
+      "key": "llama-3-2-1b-model-card",
+      "itemType": "webpage",
+      "title": "Llama 3.2 1B model card",
+      "url": "https://huggingface.co/meta-llama/Llama-3.2-1B",
+      "websiteTitle": "Project reference",
+      "date": "2026",
+      "tags": [
+        "SetConCA",
+        "project-reference",
+        "model",
+        "Llama 3"
+      ],
+      "source_files": [
+        "docs/EXPERIMENT_REPORT.md"
+      ]
+    },
+    {
+      "key": "llama-3-2-3b-model-card",
+      "itemType": "webpage",
+      "title": "Llama 3.2 3B model card",
+      "url": "https://huggingface.co/meta-llama/Llama-3.2-3B",
+      "websiteTitle": "Project reference",
+      "date": "2026",
+      "tags": [
+        "SetConCA",
+        "project-reference",
+        "model",
+        "Llama 3"
+      ],
+      "source_files": [
+        "docs/EXPERIMENT_REPORT.md"
+      ]
+    },
+    {
+      "key": "llama-3-1-8b-model-card",
+      "itemType": "webpage",
+      "title": "Llama 3.1 8B model card",
+      "url": "https://huggingface.co/meta-llama/Llama-3.1-8B",
+      "websiteTitle": "Project reference",
+      "date": "2026",
+      "tags": [
+        "SetConCA",
+        "project-reference",
+        "model",
+        "Llama 3"
+      ],
+      "source_files": [
+        "docs/EXPERIMENT_REPORT.md"
+      ]
+    },
+    {
+      "key": "qwen3-0-6b-model-card",
+      "itemType": "webpage",
+      "title": "Qwen3 0.6B model card",
+      "url": "https://huggingface.co/Qwen/Qwen3-0.6B",
+      "websiteTitle": "Project reference",
+      "date": "2026",
+      "tags": [
+        "SetConCA",
+        "project-reference",
+        "model",
+        "Qwen 3"
+      ],
+      "source_files": [
+        "docs/EXPERIMENT_REPORT.md"
+      ]
+    },
+    {
+      "key": "qwen3-4b-model-card",
+      "itemType": "webpage",
+      "title": "Qwen3 4B model card",
+      "url": "https://huggingface.co/Qwen/Qwen3-4B",
+      "websiteTitle": "Project reference",
+      "date": "2026",
+      "tags": [
+        "SetConCA",
+        "project-reference",
+        "model",
+        "Qwen 3"
+      ],
+      "source_files": [
+        "docs/EXPERIMENT_REPORT.md"
+      ]
+    },
+    {
+      "key": "qwen3-8b-model-card",
+      "itemType": "webpage",
+      "title": "Qwen3 8B model card",
+      "url": "https://huggingface.co/Qwen/Qwen3-8B",
+      "websiteTitle": "Project reference",
+      "date": "2026",
+      "tags": [
+        "SetConCA",
+        "project-reference",
+        "model",
+        "Qwen 3"
+      ],
+      "source_files": [
+        "docs/EXPERIMENT_REPORT.md"
+      ]
+    },
+    {
+      "key": "gemma-3-1b-model-card",
+      "itemType": "webpage",
+      "title": "Gemma 3 1B model card",
+      "url": "https://huggingface.co/google/gemma-3-1b-pt",
+      "websiteTitle": "Project reference",
+      "date": "2026",
+      "tags": [
+        "SetConCA",
+        "project-reference",
+        "model",
+        "Gemma 3"
+      ],
+      "source_files": [
+        "docs/EXPERIMENT_REPORT.md"
+      ]
+    },
+    {
+      "key": "gemma-3-4b-model-card",
+      "itemType": "webpage",
+      "title": "Gemma 3 4B model card",
+      "url": "https://huggingface.co/google/gemma-3-4b-pt",
+      "websiteTitle": "Project reference",
+      "date": "2026",
+      "tags": [
+        "SetConCA",
+        "project-reference",
+        "model",
+        "Gemma 3"
+      ],
+      "source_files": [
+        "docs/EXPERIMENT_REPORT.md"
+      ]
+    },
+    {
+      "key": "gemma-3-12b-model-card",
+      "itemType": "webpage",
+      "title": "Gemma 3 12B model card",
+      "url": "https://huggingface.co/google/gemma-3-12b-pt",
+      "websiteTitle": "Project reference",
+      "date": "2026",
+      "tags": [
+        "SetConCA",
+        "project-reference",
+        "model",
+        "Gemma 3"
+      ],
+      "source_files": [
+        "docs/EXPERIMENT_REPORT.md"
+      ]
+    }
+  ]
+}

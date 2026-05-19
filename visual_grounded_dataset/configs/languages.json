@@ -1,0 +1,17 @@
+{
+  "version": "core_languages_v1",
+  "languages": [
+    {"code": "en", "name": "English", "script_hint": "latin"},
+    {"code": "ar", "name": "Arabic", "script_hint": "arabic"},
+    {"code": "fr", "name": "French", "script_hint": "latin"},
+    {"code": "de", "name": "German", "script_hint": "latin"},
+    {"code": "es", "name": "Spanish", "script_hint": "latin"},
+    {"code": "zh", "name": "Chinese", "script_hint": "cjk"},
+    {"code": "hi", "name": "Hindi", "script_hint": "devanagari"},
+    {"code": "id", "name": "Indonesian", "script_hint": "latin"},
+    {"code": "ja", "name": "Japanese", "script_hint": "cjk"},
+    {"code": "ko", "name": "Korean", "script_hint": "hangul"},
+    {"code": "pt", "name": "Portuguese", "script_hint": "latin"},
+    {"code": "sw", "name": "Swahili", "script_hint": "latin"}
+  ]
+}

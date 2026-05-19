@@ -1,0 +1,37 @@
+{
+  "rejected": "data\\latent_sets\\fever_evidence_pilot\\rejected.jsonl",
+  "rejection_reason_counts": {
+    "missing_evidence_sentence_id": 31,
+    "missing_evidence_text": 1,
+    "missing_evidence_wiki_url": 31,
+    "unsupported_label:NOT ENOUGH INFO": 31
+  },
+  "sets": "data\\latent_sets\\fever_evidence_pilot\\sets.jsonl",
+  "summary": {
+    "evidence_missing_count": 0,
+    "evidence_present_count": 100,
+    "label_counts": {
+      "REFUTES": 58,
+      "SUPPORTS": 42
+    },
+    "latent_type_counts": {
+      "fact": 100
+    },
+    "mean_claim_evidence_jaccard": 0.20675189837021407,
+    "mean_claim_tokens": 8.02,
+    "mean_evidence_tokens": 25.84,
+    "mean_views_per_set": 2,
+    "n_sets": 100,
+    "placeholder_negative_count": 100,
+    "source_dataset_counts": {
+      "fever/fever": 100
+    },
+    "usage_counts": {
+      "train": 100
+    },
+    "view_type_counts": {
+      "claim": 100,
+      "evidence": 100
+    }
+  }
+}

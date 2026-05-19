@@ -1,0 +1,13 @@
+{
+  "version": "generation_settings_v1",
+  "temperature": 0.2,
+  "top_p": 0.9,
+  "max_new_tokens": 120,
+  "min_output_chars": 20,
+  "max_output_chars": 900,
+  "min_views_per_set": 12,
+  "full_run_min_models": 3,
+  "full_run_min_languages": 8,
+  "full_run_min_prompt_views": 6
+}
+

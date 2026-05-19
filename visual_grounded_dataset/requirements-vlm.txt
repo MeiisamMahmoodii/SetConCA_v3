@@ -1,0 +1,14 @@
+# Extra dependencies for real local VLM generation.
+#
+# Install into the active project environment before using:
+#   uv pip install -r visual_grounded_dataset/requirements-vlm.txt
+#
+# Torch itself is managed by the main project. Torchvision must match the local
+# Torch build; if uv cannot resolve it automatically, install the torchvision
+# wheel from the same PyTorch index/version family as torch.
+torchvision
+qwen-vl-utils
+accelerate
+sentencepiece
+timm
+einops

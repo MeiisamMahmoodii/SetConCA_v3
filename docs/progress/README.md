@@ -69,6 +69,11 @@ Use Obsidian links to connect notes:
 | 2026-05-11 | Positive vs negative steering comparison | Partial | [[2026-05-11_positive_vs_negative_steering_comparison]] |
 | 2026-05-11 | Opposite-active steering results | Partial success | [[2026-05-11_opposite_active_steering_results]] |
 | 2026-05-12 | Project graph refresh | Succeeded | [[2026-05-12_project_graph_refresh]] |
+| 2026-05-12 | Graphify code graph for src and scripts | Succeeded | [[2026-05-12_graphify_src_scripts_code_graph]] |
+| 2026-05-12 | Graphify docs semantic graph | Succeeded | [[2026-05-12_graphify_docs_semantic_graph]] |
+| 2026-05-13 | Zotero project references | Succeeded | [[2026-05-13_zotero_project_references]] |
+| 2026-05-13 | Zotero idea-origin references | Succeeded | [[2026-05-13_zotero_idea_origin_references]] |
+| 2026-05-14 | Latent dataset and dictionary plan | Succeeded | [[2026-05-14_latent_dataset_and_dictionary_plan]] |
 
 ## Guide Index
 

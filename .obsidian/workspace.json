@@ -1,24 +1,20 @@
 {
   "main": {
-    "id": "1b2b3820b770c23a",
+    "id": "84545883f1e96724",
     "type": "split",
     "children": [
       {
-        "id": "b04eba054fe05c09",
+        "id": "adba4e1aaff635b9",
         "type": "tabs",
         "children": [
           {
-            "id": "8165d41fda0b59e3",
+            "id": "76536079f7332f1b",
             "type": "leaf",
             "state": {
-              "type": "markdown",
-              "state": {
-                "file": "progress/README.md",
-                "mode": "source",
-                "source": false
-              },
+              "type": "empty",
+              "state": {},
               "icon": "lucide-file",
-              "title": "README"
+              "title": "New tab"
             }
           }
         ]
@@ -27,15 +23,15 @@
     "direction": "vertical"
   },
   "left": {
-    "id": "0bc9617b95405d69",
+    "id": "678f486c0d959c0b",
     "type": "split",
     "children": [
       {
-        "id": "8c65e7d3ee8017f0",
+        "id": "169e469510a201f9",
         "type": "tabs",
         "children": [
           {
-            "id": "a2a360ac46dab22e",
+            "id": "247c7595326f7140",
             "type": "leaf",
             "state": {
               "type": "file-explorer",
@@ -48,7 +44,7 @@
             }
           },
           {
-            "id": "9351bec4749f7a33",
+            "id": "7992254fa1b0b6f8",
             "type": "leaf",
             "state": {
               "type": "search",
@@ -65,7 +61,7 @@
             }
           },
           {
-            "id": "48e5304b152287ee",
+            "id": "570b876ee080778b",
             "type": "leaf",
             "state": {
               "type": "bookmarks",
@@ -81,20 +77,19 @@
     "width": 300
   },
   "right": {
-    "id": "4fc8e76f1b75f726",
+    "id": "433a453f4aadc51e",
     "type": "split",
     "children": [
       {
-        "id": "853b3e09935e6e74",
+        "id": "ee0afa238d8b45dd",
         "type": "tabs",
         "children": [
           {
-            "id": "dad24a9334dc09d0",
+            "id": "885f6696bd3b634e",
             "type": "leaf",
             "state": {
               "type": "backlink",
               "state": {
-                "file": "progress/README.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -104,25 +99,24 @@
                 "unlinkedCollapsed": true
               },
               "icon": "links-coming-in",
-              "title": "Backlinks for README"
+              "title": "Backlinks"
             }
           },
           {
-            "id": "44442e30c9433e65",
+            "id": "d032181b75765c07",
             "type": "leaf",
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "progress/README.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               },
               "icon": "links-going-out",
-              "title": "Outgoing links from README"
+              "title": "Outgoing links"
             }
           },
           {
-            "id": "97ebce805e0a5f16",
+            "id": "407e2720af7323f4",
             "type": "leaf",
             "state": {
               "type": "tag",
@@ -137,7 +131,7 @@
             }
           },
           {
-            "id": "29de408eef981868",
+            "id": "666dda86c61ed31d",
             "type": "leaf",
             "state": {
               "type": "all-properties",
@@ -151,18 +145,17 @@
             }
           },
           {
-            "id": "82ab7492eff9f34d",
+            "id": "ea8b5f4acc449bd5",
             "type": "leaf",
             "state": {
               "type": "outline",
               "state": {
-                "file": "progress/README.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Outline of README"
+              "title": "Outline"
             }
           }
         ]
@@ -174,7 +167,6 @@
   },
   "left-ribbon": {
     "hiddenItems": {
-      "obsidian-git:Open Git source control": false,
       "switcher:Open quick switcher": false,
       "graph:Open graph view": false,
       "canvas:Create new canvas": false,
@@ -184,50 +176,10 @@
       "bases:Create new base": false
     }
   },
-  "active": "8165d41fda0b59e3",
+  "active": "76536079f7332f1b",
   "lastOpenFiles": [
-    "progress/2026-05-13_zotero_idea_origin_references.md",
-    "references/setconca_idea_origin_references.bib",
-    "references/setconca_idea_origin_references_zotero_audit.json",
-    "progress/2026-05-13_zotero_project_references.md",
-    "references/setconca_project_references_zotero_audit.json",
-    "references/setconca_project_references.bib",
-    "references",
-    "progress/2026-05-12_graphify_docs_semantic_graph.md",
-    "progress/2026-05-12_graphify_src_scripts_code_graph.md",
-    "DATASET_PROJECT_PLAN.md",
-    "progress/2026-05-12_project_graph_refresh.md",
-    "temp_setconca_report/SetConCA_Report.pdf",
-    "temp_setconca_report/figures/active_vs_opposite_keyword_gain_explained.png",
-    "temp_setconca_report/figures/training_loss_summary.png",
-    "temp_setconca_report/tmp/rendered_check",
-    "progress/2026-05-11_opposite_active_steering_results.md",
-    "temp_setconca_report/figures/setconca_math_summary.png",
-    "progress/2026-05-11_positive_vs_negative_steering_comparison.md",
-    "temp_setconca_report/tmp/soffice_convert_ef6fa7g5",
-    "temp_setconca_report/tmp/soffice_profile_ugw7l8b0",
-    "temp_setconca_report/tmp",
-    "temp_setconca_report/SetConCA_Temporary_Report.md",
-    "temp_setconca_report/figures/topk_control_explanation.png",
-    "temp_setconca_report/figures/dataset_funnel.png",
-    "temp_setconca_report/figures/setconca_v2_architecture.png",
-    "temp_setconca_report/figures/pipeline_diagram.png",
-    "progress/2026-05-08_news_prompt_causal_steering_results.md",
-    "progress/2026-05-08_first_causal_steering_probe_results.md",
-    "progress/2026-05-08_causal_steering_probe_setup.md",
-    "progress/2026-05-08_diverse_run_and_concept_inspection.md",
-    "progress/2026-05-08_diverse_steering_slice.md",
-    "progress/2026-05-08_first_pass_concept_labels.md",
-    "progress/2026-05-08_concept_review_pages.md",
-    "progress/2026-05-08_bridged_concept_inspection.md",
-    "progress/2026-05-08_epoch_sweep_comparison.md",
-    "progress/2026-05-08_automatic_summary_reporting.md",
-    "progress/2026-05-08_layer_pair_breakdown.md",
-    "progress/2026-05-08_setconca_vs_pointwise_baseline_results.md",
-    "progress/2026-05-08_llama_qwen_focus_and_pointwise_baseline.md",
-    "progress/2026-05-08_proposal_alignment_audit.md",
-    "progress/2026-05-08_cross_family_pair_verification.md",
-    "progress/2026-05-08_diagnostic_family_reruns_e25_b128.md",
-    "progress/2026-05-08_bridge_diagnostics.md"
+    "graphify-out/GRAPH_REPORT.md",
+    "graphify-out/GRAPH_REPORT_src_scripts.md",
+    "graphify-out/GRAPH_REPORT_docs_combined.md"
   ]
 }
