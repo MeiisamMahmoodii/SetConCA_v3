@@ -57,6 +57,29 @@ def normalize_device_map(value: str) -> Any:
     return value
 
 
+def load_adapter_once(
+    source_id: str,
+    job: dict[str, Any],
+    args: argparse.Namespace,
+) -> VLMAdapter:
+    print(f"Loading model adapter: {source_id} ({job['model']['model_id']})", flush=True)
+    load_started = time.time()
+    try:
+        adapter = make_adapter(job["model"], args)
+    except Exception as exc:
+        print("")
+        print("Model adapter failed to load. This is a fatal setup error, not a per-image generation error.", file=sys.stderr)
+        print(f"- model source: {source_id}", file=sys.stderr)
+        print(f"- model id: {job['model']['model_id']}", file=sys.stderr)
+        print(f"- adapter: {job['model'].get('adapter', 'generic_pipeline')}", file=sys.stderr)
+        print(f"- device map: {args.device_map}", file=sys.stderr)
+        print(f"- CUDA_VISIBLE_DEVICES: {os.environ.get('CUDA_VISIBLE_DEVICES', '<unset>')}", file=sys.stderr)
+        print(f"- error: {exc!r}", file=sys.stderr)
+        raise
+    print(f"Loaded {source_id} in {time.time() - load_started:.1f}s", flush=True)
+    return adapter
+
+
 class VLMAdapter(Protocol):
     def generate(self, job: dict[str, Any], generation_config: dict[str, Any]) -> str:
         ...
@@ -264,9 +287,10 @@ class QwenVLAdapter(AutoImageTextAdapter):
             return
 
         self._fallback = None
+        model_class = "Qwen3VLForConditionalGeneration" if "Qwen3" in model_id else "Qwen2_5_VLForConditionalGeneration"
         super().__init__(
             model_id,
-            model_class="Qwen2_5_VLForConditionalGeneration",
+            model_class=model_class,
             device_map=device_map,
             dtype=dtype,
             image_ref_mode="path",
@@ -518,16 +542,14 @@ def main() -> None:
         batch_statuses = ["ok"] * len(batch_jobs)
         batch_errors: list[str | None] = [None] * len(batch_jobs)
 
+        if args.backend != "mock" and (adapter is None or source_id != loaded_source_id):
+            adapter = load_adapter_once(source_id, job, args)
+            loaded_source_id = source_id
+
         try:
             if args.backend == "mock":
                 batch_outputs = [mock_generate(batch_job) for batch_job in batch_jobs]
             else:
-                if adapter is None or source_id != loaded_source_id:
-                    print(f"Loading model adapter: {source_id} ({job['model']['model_id']})", flush=True)
-                    load_started = time.time()
-                    adapter = make_adapter(job["model"], args)
-                    loaded_source_id = source_id
-                    print(f"Loaded {source_id} in {time.time() - load_started:.1f}s", flush=True)
                 assert adapter is not None
                 batch_outputs = generate_batch_with_adapter(adapter, batch_jobs, generation_config, batch_size)
                 if len(batch_outputs) != len(batch_jobs):
