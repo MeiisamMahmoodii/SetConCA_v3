@@ -45,6 +45,7 @@ MIN_VIEWS="${MIN_VIEWS:-48}"
 PROGRESS_EVERY="${PROGRESS_EVERY:-100}"
 VLM_BATCH_SIZE="${VLM_BATCH_SIZE:-4}"
 VLM_DTYPE="${VLM_DTYPE:-bfloat16}"
+VLM_DEVICE_MAP="${VLM_DEVICE_MAP:-single}"
 
 # VLM generation layout
 # VLM_GPUS: comma-separated device ids (default: all GPUs from nvidia-smi)
@@ -217,8 +218,9 @@ run_generation_worker() {
   fi
 
   mkdir -p "$(dirname "$out")" "$(dirname "$log")"
-  echo "[vlm] gpu=$gpu model=$model_source start=$start limit=$limit batch=$VLM_BATCH_SIZE dtype=$VLM_DTYPE -> $out"
+  echo "[vlm] gpu=$gpu model=$model_source start=$start limit=$limit batch=$VLM_BATCH_SIZE dtype=$VLM_DTYPE device_map=$VLM_DEVICE_MAP -> $out"
   (
+    export CUDA_DEVICE_ORDER=PCI_BUS_ID
     export CUDA_VISIBLE_DEVICES="$gpu"
     uv run python "$GEN_SCRIPT" \
       --jobs "$JOBS_FILE" \
@@ -229,6 +231,7 @@ run_generation_worker() {
       --limit "$limit" \
       --batch-size "$VLM_BATCH_SIZE" \
       --dtype "$VLM_DTYPE" \
+      --device-map "$VLM_DEVICE_MAP" \
       --continue-on-error \
       --progress-every "$PROGRESS_EVERY" \
       "${resume_args[@]}"
@@ -314,6 +317,7 @@ run_single_model_generation() {
   mkdir -p "$(dirname "$final_out")" "$(dirname "$log_path")"
   echo "[vlm] $model_source: $total_jobs jobs on gpu $gpu"
   (
+    export CUDA_DEVICE_ORDER=PCI_BUS_ID
     export CUDA_VISIBLE_DEVICES="$gpu"
     local resume_args=()
     if [[ -f "$final_out" ]]; then
@@ -326,6 +330,7 @@ run_single_model_generation() {
       --only-model-source "$model_source" \
       --batch-size "$VLM_BATCH_SIZE" \
       --dtype "$VLM_DTYPE" \
+      --device-map "$VLM_DEVICE_MAP" \
       --continue-on-error \
       --progress-every "$PROGRESS_EVERY" \
       "${resume_args[@]}"
@@ -373,6 +378,7 @@ run_vlm_generation_phase() {
   echo "- PARALLEL_VLMS: $PARALLEL_VLMS"
   echo "- VLM_BATCH_SIZE: $VLM_BATCH_SIZE (raise to use more VRAM; lower if OOM)"
   echo "- VLM_DTYPE: $VLM_DTYPE"
+  echo "- VLM_DEVICE_MAP: $VLM_DEVICE_MAP (single pins one visible GPU per worker)"
 
   local qwen3_out="visual_grounded_dataset/data/responses/${RUN_NAME}_qwen3_raw.jsonl"
   local qwen25_out="visual_grounded_dataset/data/responses/${RUN_NAME}_qwen2_5_raw.jsonl"

@@ -219,6 +219,8 @@ DOWNLOAD_SPLIT=train
 DOWNLOAD_PROCESSES=16
 LIMIT_IMAGES=1000
 PROGRESS_EVERY=100
+VLM_BATCH_SIZE=4
+VLM_DEVICE_MAP=single
 ```
 
 **Default (4 GPUs):** auto-detect GPUs 0–3, shard each model across all cards
@@ -228,14 +230,27 @@ PROGRESS_EVERY=100
 ./visual_grounded_dataset/scripts/run_visual_pipeline.sh "" qwen_500_v2views
 ```
 
+**Exclude a busy GPU** (e.g. shared with another user):
+
+```bash
+VLM_EXCLUDE_GPUS=3 VLM_GPUS=0,1,2 VLM_BATCH_SIZE=16 \
+  ./visual_grounded_dataset/scripts/run_visual_pipeline.sh "" qwen_500_v2views
+```
+
 **Both models at once** (2 GPUs each, sharded within each model):
 
 ```bash
 PARALLEL_VLMS=1 \
+VLM_DEVICE_MAP=single \
+VLM_BATCH_SIZE=4 \
 VLM_GPU_QWEN3=0,1 \
 VLM_GPU_QWEN25=2,3 \
 ./visual_grounded_dataset/scripts/run_visual_pipeline.sh "" qwen_500_v2views
 ```
+
+`VLM_DEVICE_MAP=single` keeps each worker on one visible GPU (faster when the
+model fits). If you hit OOM, lower `VLM_BATCH_SIZE` first, then try
+`VLM_DEVICE_MAP=auto` as a slower fallback.
 
 **Legacy:** one process per model, no sharding:
 
