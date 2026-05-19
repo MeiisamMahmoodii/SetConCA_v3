@@ -194,14 +194,17 @@ if [[ "$PARALLEL_VLMS" == "1" ]]; then
   echo "[3-4/12] Generate Qwen3 and Qwen2.5 in parallel"
   echo "- qwen3 gpu: $VLM_GPU_QWEN3"
   echo "- qwen2.5 gpu: $VLM_GPU_QWEN25"
+  echo "- note: inside each process, the selected physical GPU is remapped to cuda:0"
   echo "- qwen3 log: visual_grounded_dataset/data/reports/${RUN_NAME}_qwen3_generation.log"
   echo "- qwen2.5 log: visual_grounded_dataset/data/reports/${RUN_NAME}_qwen2_5_generation.log"
   (
+    export CUDA_DEVICE_ORDER=PCI_BUS_ID
     export CUDA_VISIBLE_DEVICES="$VLM_GPU_QWEN3"
     run_qwen3_generation
   ) > "visual_grounded_dataset/data/reports/${RUN_NAME}_qwen3_generation.log" 2>&1 &
   qwen3_pid=$!
   (
+    export CUDA_DEVICE_ORDER=PCI_BUS_ID
     export CUDA_VISIBLE_DEVICES="$VLM_GPU_QWEN25"
     run_qwen25_generation
   ) > "visual_grounded_dataset/data/reports/${RUN_NAME}_qwen2_5_generation.log" 2>&1 &

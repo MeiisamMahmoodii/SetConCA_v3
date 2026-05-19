@@ -36,6 +36,18 @@ def quiet_common_warnings() -> None:
         pass
 
 
+def visible_accelerator_summary() -> str:
+    try:
+        import torch
+
+        if not torch.cuda.is_available():
+            return "cuda unavailable"
+        names = [torch.cuda.get_device_name(index) for index in range(torch.cuda.device_count())]
+        return f"cuda devices visible to this process: {len(names)} | {names}"
+    except Exception as exc:
+        return f"cuda visibility check failed: {exc!r}"
+
+
 class VLMAdapter(Protocol):
     def generate(self, job: dict[str, Any], generation_config: dict[str, Any]) -> str:
         ...
@@ -460,6 +472,8 @@ def main() -> None:
     print(f"- skipped existing responses: {selected_before_skip - len(jobs)}")
     print(f"- jobs to generate: {len(jobs)}")
     print(f"- batch size: {args.batch_size}")
+    print(f"- CUDA_VISIBLE_DEVICES: {os.environ.get('CUDA_VISIBLE_DEVICES', '<unset>')}")
+    print(f"- {visible_accelerator_summary()}")
     print(f"- models: {dict(model_counts)}")
     print(f"- languages: {dict(language_counts)}")
     print(f"- views: {dict(view_counts)}")
