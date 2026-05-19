@@ -193,6 +193,60 @@ python visual_grounded_dataset\scripts\artifact_audit.py `
   --out visual_grounded_dataset\data\reports\tiny_artifact_audit.md
 ```
 
+## Linux End-To-End Script
+
+For Linux/zsh/bash environments, use:
+
+```bash
+chmod +x visual_grounded_dataset/scripts/run_visual_pipeline.sh
+DOWNLOAD_IMAGES=1000 LIMIT_IMAGES=1000 \
+  ./visual_grounded_dataset/scripts/run_visual_pipeline.sh "" qwen_1000_v2views
+```
+
+Passing an empty image directory (`""`) makes the script download a configurable
+Open Images subset first. To use an existing image folder instead:
+
+```bash
+LIMIT_IMAGES=500 \
+  ./visual_grounded_dataset/scripts/run_visual_pipeline.sh /path/to/openimages/train qwen_500_v2views
+```
+
+Useful overrides:
+
+```bash
+DOWNLOAD_IMAGES=2000
+DOWNLOAD_SPLIT=train
+DOWNLOAD_PROCESSES=16
+LIMIT_IMAGES=1000
+PROGRESS_EVERY=100
+```
+
+To run the two Qwen VLM generators in parallel on two GPUs:
+
+```bash
+PARALLEL_VLMS=1 \
+VLM_GPU_QWEN3=0 \
+VLM_GPU_QWEN25=1 \
+DOWNLOAD_IMAGES=1000 \
+LIMIT_IMAGES=1000 \
+./visual_grounded_dataset/scripts/run_visual_pipeline.sh "" qwen_1000_v2views
+```
+
+This starts one Qwen3-VL process with `CUDA_VISIBLE_DEVICES=0` and one
+Qwen2.5-VL process with `CUDA_VISIBLE_DEVICES=1`. Logs are written to:
+
+```text
+visual_grounded_dataset/data/reports/<run_name>_qwen3_generation.log
+visual_grounded_dataset/data/reports/<run_name>_qwen2_5_generation.log
+```
+
+Watch them while the run is active with:
+
+```bash
+tail -f visual_grounded_dataset/data/reports/qwen_1000_v2views_qwen3_generation.log
+tail -f visual_grounded_dataset/data/reports/qwen_1000_v2views_qwen2_5_generation.log
+```
+
 ## Causal/Artifact Claim
 
 This dataset cannot prove causality from data alone. It can support a causal
