@@ -48,6 +48,15 @@ def visible_accelerator_summary() -> str:
         return f"cuda visibility check failed: {exc!r}"
 
 
+def normalize_device_map(value: str) -> Any:
+    normalized = value.strip().lower()
+    if normalized in {"none", ""}:
+        return "none"
+    if normalized in {"single", "cuda", "cuda:0", "gpu0"}:
+        return {"": 0}
+    return value
+
+
 class VLMAdapter(Protocol):
     def generate(self, job: dict[str, Any], generation_config: dict[str, Any]) -> str:
         ...
@@ -115,10 +124,12 @@ def decode_pipeline_output(output: Any) -> str:
 
 
 class GenericPipelineAdapter:
-    def __init__(self, model_id: str, *, device_map: str, dtype: str, image_ref_mode: str) -> None:
+    def __init__(self, model_id: str, *, device_map: Any, dtype: str, image_ref_mode: str) -> None:
         from transformers import pipeline
 
-        kwargs: dict[str, Any] = {"model": model_id, "task": "image-text-to-text", "device_map": device_map}
+        kwargs: dict[str, Any] = {"model": model_id, "task": "image-text-to-text"}
+        if device_map != "none":
+            kwargs["device_map"] = device_map
         if dtype != "none":
             kwargs["dtype"] = dtype
         self.pipe = pipeline(**kwargs)
@@ -187,7 +198,7 @@ class AutoImageTextAdapter:
         model_id: str,
         *,
         model_class: str,
-        device_map: str,
+        device_map: Any,
         dtype: str,
         image_ref_mode: str,
         trust_remote_code: bool = False,
@@ -197,7 +208,9 @@ class AutoImageTextAdapter:
 
         transformers = __import__("transformers", fromlist=[model_class])
         model_cls = getattr(transformers, model_class)
-        model_kwargs: dict[str, Any] = {"device_map": device_map}
+        model_kwargs: dict[str, Any] = {}
+        if device_map != "none":
+            model_kwargs["device_map"] = device_map
         if dtype != "none":
             model_kwargs["dtype"] = dtype
         if trust_remote_code:
@@ -239,7 +252,7 @@ class AutoImageTextAdapter:
 
 
 class QwenVLAdapter(AutoImageTextAdapter):
-    def __init__(self, model_id: str, *, device_map: str, dtype: str, image_ref_mode: str) -> None:
+    def __init__(self, model_id: str, *, device_map: Any, dtype: str, image_ref_mode: str) -> None:
         try:
             import qwen_vl_utils  # noqa: F401
         except Exception:
@@ -304,7 +317,7 @@ class QwenVLAdapter(AutoImageTextAdapter):
 
 
 class InternVLAdapter:
-    def __init__(self, model_id: str, *, device_map: str, dtype: str, max_tiles: int) -> None:
+    def __init__(self, model_id: str, *, device_map: Any, dtype: str, max_tiles: int) -> None:
         import torch
         from transformers import AutoModel, AutoTokenizer
 
@@ -445,6 +458,7 @@ def main() -> None:
     parser.add_argument("--image-ref-mode", choices=["file_uri", "path", "pil"], default="file_uri")
     parser.add_argument("--internvl-max-tiles", type=int, default=6)
     args = parser.parse_args()
+    args.device_map = normalize_device_map(args.device_map)
 
     generation_config = read_json(args.generation_config)
     all_jobs = read_jsonl(args.jobs)
@@ -472,6 +486,7 @@ def main() -> None:
     print(f"- skipped existing responses: {selected_before_skip - len(jobs)}")
     print(f"- jobs to generate: {len(jobs)}")
     print(f"- batch size: {args.batch_size}")
+    print(f"- device map: {args.device_map}")
     print(f"- CUDA_VISIBLE_DEVICES: {os.environ.get('CUDA_VISIBLE_DEVICES', '<unset>')}")
     print(f"- {visible_accelerator_summary()}")
     print(f"- models: {dict(model_counts)}")
