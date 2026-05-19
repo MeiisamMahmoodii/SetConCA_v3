@@ -41,6 +41,18 @@ class VLMAdapter(Protocol):
         ...
 
 
+def generate_batch_with_adapter(
+    adapter: VLMAdapter,
+    jobs: list[dict[str, Any]],
+    generation_config: dict[str, Any],
+    batch_size: int,
+) -> list[str]:
+    batch_method = getattr(adapter, "generate_batch", None)
+    if callable(batch_method) and len(jobs) > 1:
+        return list(batch_method(jobs, generation_config, batch_size))
+    return [adapter.generate(job, generation_config) for job in jobs]
+
+
 def mock_generate(job: dict) -> str:
     image_id = job["image"]["image_id"]
     language = job["language"]["name"]
@@ -101,6 +113,40 @@ class GenericPipelineAdapter:
         self.image_ref_mode = image_ref_mode
 
     def generate(self, job: dict[str, Any], generation_config: dict[str, Any]) -> str:
+        return self.generate_batch([job], generation_config, batch_size=1)[0]
+
+    def generate_batch(self, jobs: list[dict[str, Any]], generation_config: dict[str, Any], batch_size: int) -> list[str]:
+        if len(jobs) == 1:
+            return [self.generate_one_by_one(jobs[0], generation_config)]
+        messages_batch = []
+        for job in jobs:
+            image = image_ref(job["image"]["image_path"], self.image_ref_mode)
+            prompt = job["prompt"]
+            messages_batch.append(
+                [
+                    {
+                        "role": "user",
+                        "content": [
+                            {"type": "image", "url": image} if isinstance(image, str) else {"type": "image", "image": image},
+                            {"type": "text", "text": prompt},
+                        ],
+                    }
+                ]
+            )
+        outputs = self.pipe(
+            text=messages_batch,
+            batch_size=batch_size,
+            max_new_tokens=int(generation_config.get("max_new_tokens", 120)),
+            do_sample=float(generation_config.get("temperature", 0.0)) > 0,
+            temperature=float(generation_config.get("temperature", 0.2)),
+            top_p=float(generation_config.get("top_p", 0.9)),
+            return_full_text=False,
+        )
+        if len(jobs) == 1:
+            return [decode_pipeline_output(outputs)]
+        return [decode_pipeline_output(output) for output in outputs]
+
+    def generate_one_by_one(self, job: dict[str, Any], generation_config: dict[str, Any]) -> str:
         image = image_ref(job["image"]["image_path"], self.image_ref_mode)
         prompt = job["prompt"]
         messages = [
@@ -202,24 +248,31 @@ class QwenVLAdapter(AutoImageTextAdapter):
         )
 
     def generate(self, job: dict[str, Any], generation_config: dict[str, Any]) -> str:
+        return self.generate_batch([job], generation_config, batch_size=1)[0]
+
+    def generate_batch(self, jobs: list[dict[str, Any]], generation_config: dict[str, Any], batch_size: int) -> list[str]:
         if self._fallback is not None:
-            return self._fallback.generate(job, generation_config)
+            return self._fallback.generate_batch(jobs, generation_config, batch_size)
 
         from qwen_vl_utils import process_vision_info
 
-        messages = [
-            {
-                "role": "user",
-                "content": [
-                    {"type": "image", "image": str(Path(job["image"]["image_path"]).resolve())},
-                    {"type": "text", "text": job["prompt"]},
-                ],
-            }
-        ]
-        text = self.processor.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
-        image_inputs, video_inputs = process_vision_info(messages)
+        message_batches = []
+        for job in jobs:
+            message_batches.append(
+                [
+                    {
+                        "role": "user",
+                        "content": [
+                            {"type": "image", "image": str(Path(job["image"]["image_path"]).resolve())},
+                            {"type": "text", "text": job["prompt"]},
+                        ],
+                    }
+                ]
+            )
+        text = [self.processor.apply_chat_template(messages, tokenize=False, add_generation_prompt=True) for messages in message_batches]
+        image_inputs, video_inputs = process_vision_info(message_batches)
         inputs = self.processor(
-            text=[text],
+            text=text,
             images=image_inputs,
             videos=video_inputs,
             padding=True,
@@ -234,7 +287,8 @@ class QwenVLAdapter(AutoImageTextAdapter):
                 temperature=float(generation_config.get("temperature", 0.2)),
                 top_p=float(generation_config.get("top_p", 0.9)),
             )
-        return compact_text(self.processor.decode(outputs[0][input_len:], skip_special_tokens=True))
+        decoded = self.processor.batch_decode(outputs[:, input_len:], skip_special_tokens=True)
+        return [compact_text(text) for text in decoded]
 
 
 class InternVLAdapter:
@@ -373,6 +427,7 @@ def main() -> None:
     parser.add_argument("--resume", action="store_true", help="Append to --out and skip existing response IDs.")
     parser.add_argument("--continue-on-error", action="store_true", help="Write error rows instead of stopping on generation errors.")
     parser.add_argument("--progress-every", type=int, default=25, help="Print progress every N generated jobs.")
+    parser.add_argument("--batch-size", type=int, default=1, help="Number of jobs to generate per VLM forward pass when the adapter supports batching.")
     parser.add_argument("--device-map", default="auto", help="Transformers device_map; use 'none' for adapters that should not pass it.")
     parser.add_argument("--dtype", default="auto", help="Transformers dtype. Use 'none' to omit dtype.")
     parser.add_argument("--image-ref-mode", choices=["file_uri", "path", "pil"], default="file_uri")
@@ -404,6 +459,7 @@ def main() -> None:
     print(f"- selected jobs before resume skip: {selected_before_skip}")
     print(f"- skipped existing responses: {selected_before_skip - len(jobs)}")
     print(f"- jobs to generate: {len(jobs)}")
+    print(f"- batch size: {args.batch_size}")
     print(f"- models: {dict(model_counts)}")
     print(f"- languages: {dict(language_counts)}")
     print(f"- views: {dict(view_counts)}")
@@ -416,56 +472,84 @@ def main() -> None:
     generated = 0
     errors = 0
     started = time.time()
-    for index, job in enumerate(jobs, start=1):
-        response_id_base = stable_hash({"job_id": job["job_id"], "backend": args.backend})
-        status = "ok"
-        error = None
+    batch_size = max(1, int(args.batch_size))
+    index = 0
+    while index < len(jobs):
+        job = jobs[index]
+        source_id = job["model"]["source_id"]
+        next_index = index + 1
+        while (
+            next_index < len(jobs)
+            and next_index - index < batch_size
+            and jobs[next_index]["model"]["source_id"] == source_id
+        ):
+            next_index += 1
+        batch_jobs = jobs[index:next_index]
+        batch_outputs: list[str] = []
+        batch_statuses = ["ok"] * len(batch_jobs)
+        batch_errors: list[str | None] = [None] * len(batch_jobs)
+
         try:
             if args.backend == "mock":
-                output_text = mock_generate(job)
+                batch_outputs = [mock_generate(batch_job) for batch_job in batch_jobs]
             else:
-                source_id = job["model"]["source_id"]
                 if adapter is None or source_id != loaded_source_id:
                     print(f"Loading model adapter: {source_id} ({job['model']['model_id']})", flush=True)
                     load_started = time.time()
                     adapter = make_adapter(job["model"], args)
                     loaded_source_id = source_id
                     print(f"Loaded {source_id} in {time.time() - load_started:.1f}s", flush=True)
-                output_text = adapter.generate(job, generation_config)
+                assert adapter is not None
+                batch_outputs = generate_batch_with_adapter(adapter, batch_jobs, generation_config, batch_size)
+                if len(batch_outputs) != len(batch_jobs):
+                    raise RuntimeError(f"adapter returned {len(batch_outputs)} outputs for {len(batch_jobs)} jobs")
         except Exception as exc:
             if not args.continue_on_error:
                 raise
-            output_text = ""
-            status = "error"
-            error = repr(exc)
-            errors += 1
+            batch_outputs = []
+            for batch_job in batch_jobs:
+                try:
+                    if args.backend == "mock":
+                        batch_outputs.append(mock_generate(batch_job))
+                    else:
+                        assert adapter is not None
+                        batch_outputs.append(adapter.generate(batch_job, generation_config))
+                except Exception as item_exc:
+                    batch_outputs.append("")
+                    item_index = len(batch_outputs) - 1
+                    batch_statuses[item_index] = "error"
+                    batch_errors[item_index] = repr(item_exc)
+                    errors += 1
 
-        rows.append(
-            {
-                "response_id": response_id_base,
-                "job_id": job["job_id"],
-                "image_id": job["image"]["image_id"],
-                "image_path": job["image"]["image_path"],
-                "source_dataset": job["image"].get("source_dataset", "unknown"),
-                "topic_tags": job["image"].get("topic_tags", []),
-                "model_source_id": job["model"]["source_id"],
-                "model_id": job["model"]["model_id"],
-                "model_adapter": job["model"].get("adapter", "generic_pipeline"),
-                "language_code": job["language"]["code"],
-                "language_name": job["language"]["name"],
-                "language_script_hint": job["language"].get("script_hint", ""),
-                "prompt_view": job["view"]["view_id"],
-                "prompt": job["prompt"],
-                "prompt_hash": job["prompt_hash"],
-                "generation_config": generation_config,
-                "output_text": output_text,
-                "generation_status": status,
-                **({"generation_error": error} if error else {}),
-                "generated_at": datetime.now(timezone.utc).isoformat(),
-                "backend": args.backend,
-            }
-        )
-        generated += 1
+        for batch_job, output_text, status, error in zip(batch_jobs, batch_outputs, batch_statuses, batch_errors):
+            response_id_base = stable_hash({"job_id": batch_job["job_id"], "backend": args.backend})
+            rows.append(
+                {
+                    "response_id": response_id_base,
+                    "job_id": batch_job["job_id"],
+                    "image_id": batch_job["image"]["image_id"],
+                    "image_path": batch_job["image"]["image_path"],
+                    "source_dataset": batch_job["image"].get("source_dataset", "unknown"),
+                    "topic_tags": batch_job["image"].get("topic_tags", []),
+                    "model_source_id": batch_job["model"]["source_id"],
+                    "model_id": batch_job["model"]["model_id"],
+                    "model_adapter": batch_job["model"].get("adapter", "generic_pipeline"),
+                    "language_code": batch_job["language"]["code"],
+                    "language_name": batch_job["language"]["name"],
+                    "language_script_hint": batch_job["language"].get("script_hint", ""),
+                    "prompt_view": batch_job["view"]["view_id"],
+                    "prompt": batch_job["prompt"],
+                    "prompt_hash": batch_job["prompt_hash"],
+                    "generation_config": generation_config,
+                    "output_text": output_text,
+                    "generation_status": status,
+                    **({"generation_error": error} if error else {}),
+                    "generated_at": datetime.now(timezone.utc).isoformat(),
+                    "backend": args.backend,
+                }
+            )
+        generated += len(batch_jobs)
+        index = next_index
         if generated == 1 or generated % args.progress_every == 0 or generated == len(jobs):
             elapsed = time.time() - started
             rate = generated / elapsed if elapsed > 0 else 0.0

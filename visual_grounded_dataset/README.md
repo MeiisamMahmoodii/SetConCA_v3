@@ -219,12 +219,14 @@ DOWNLOAD_SPLIT=train
 DOWNLOAD_PROCESSES=16
 LIMIT_IMAGES=1000
 PROGRESS_EVERY=100
+VLM_BATCH_SIZE=4
 ```
 
 To run the two Qwen VLM generators in parallel on two GPUs:
 
 ```bash
 PARALLEL_VLMS=1 \
+VLM_BATCH_SIZE=4 \
 VLM_GPU_QWEN3=0 \
 VLM_GPU_QWEN25=1 \
 DOWNLOAD_IMAGES=1000 \
@@ -233,7 +235,10 @@ LIMIT_IMAGES=1000 \
 ```
 
 This starts one Qwen3-VL process with `CUDA_VISIBLE_DEVICES=0` and one
-Qwen2.5-VL process with `CUDA_VISIBLE_DEVICES=1`. Logs are written to:
+Qwen2.5-VL process with `CUDA_VISIBLE_DEVICES=1`. `VLM_BATCH_SIZE` controls
+how many image-prompt jobs each process sends through the model at once. Start
+with `4`; try `8` if VRAM usage is low, or `2` if you hit CUDA out-of-memory.
+Logs are written to:
 
 ```text
 visual_grounded_dataset/data/reports/<run_name>_qwen3_generation.log

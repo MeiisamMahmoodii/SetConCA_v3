@@ -12,7 +12,7 @@ set -euo pipefail
 # Common overrides:
 #   DOWNLOAD_IMAGES=1000 LIMIT_IMAGES=1000 ./visual_grounded_dataset/scripts/run_visual_pipeline.sh "" qwen_1000_v2views
 #   LIMIT_IMAGES=50 ./visual_grounded_dataset/scripts/run_visual_pipeline.sh /path/to/images smoke_v2views
-#   PARALLEL_VLMS=1 VLM_GPU_QWEN3=0 VLM_GPU_QWEN25=1 ./visual_grounded_dataset/scripts/run_visual_pipeline.sh "" qwen_1000_v2views
+#   PARALLEL_VLMS=1 VLM_BATCH_SIZE=4 VLM_GPU_QWEN3=0 VLM_GPU_QWEN25=1 ./visual_grounded_dataset/scripts/run_visual_pipeline.sh "" qwen_1000_v2views
 
 IMAGE_DIR="${1:-}"
 RUN_NAME="${2:-pilot_qwen_1000img_v2views}"
@@ -32,6 +32,7 @@ LIMIT_LANGUAGES="${LIMIT_LANGUAGES:-4}"
 LIMIT_VIEWS="${LIMIT_VIEWS:-8}"
 MIN_VIEWS="${MIN_VIEWS:-48}"
 PROGRESS_EVERY="${PROGRESS_EVERY:-100}"
+VLM_BATCH_SIZE="${VLM_BATCH_SIZE:-4}"
 PARALLEL_VLMS="${PARALLEL_VLMS:-0}"
 VLM_GPU_QWEN3="${VLM_GPU_QWEN3:-0}"
 VLM_GPU_QWEN25="${VLM_GPU_QWEN25:-1}"
@@ -50,6 +51,7 @@ TOPK="${TOPK:-32}"
 run_qwen3_generation() {
   echo "[3/12] Generate Qwen3"
   echo "- gpu: ${CUDA_VISIBLE_DEVICES:-all visible}"
+  echo "- batch size: $VLM_BATCH_SIZE"
   uv run python visual_grounded_dataset/scripts/generate_with_vlm.py \
     --jobs "visual_grounded_dataset/data/jobs/${RUN_NAME}_jobs.jsonl" \
     --out "visual_grounded_dataset/data/responses/${RUN_NAME}_qwen3_raw.jsonl" \
@@ -57,12 +59,14 @@ run_qwen3_generation() {
     --only-model-source qwen3_vl_4b \
     --continue-on-error \
     --resume \
+    --batch-size "$VLM_BATCH_SIZE" \
     --progress-every "$PROGRESS_EVERY"
 }
 
 run_qwen25_generation() {
   echo "[4/12] Generate Qwen2.5"
   echo "- gpu: ${CUDA_VISIBLE_DEVICES:-all visible}"
+  echo "- batch size: $VLM_BATCH_SIZE"
   uv run python visual_grounded_dataset/scripts/generate_with_vlm.py \
     --jobs "visual_grounded_dataset/data/jobs/${RUN_NAME}_jobs.jsonl" \
     --out "visual_grounded_dataset/data/responses/${RUN_NAME}_qwen2_5_raw.jsonl" \
@@ -70,6 +74,7 @@ run_qwen25_generation() {
     --only-model-source qwen2_5_vl_7b \
     --continue-on-error \
     --resume \
+    --batch-size "$VLM_BATCH_SIZE" \
     --progress-every "$PROGRESS_EVERY"
 }
 
