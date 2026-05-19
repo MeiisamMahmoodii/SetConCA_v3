@@ -22,6 +22,12 @@ dependencies = [
 
 [project.optional-dependencies]
 reviewer = ["dictionary-learning>=0.1.0"]
+vlm = [
+    "torchvision>=0.26.0",
+    "qwen-vl-utils",
+    "sentencepiece",
+    "timm",
+]
 server = [
     "vllm; sys_platform == 'linux' and python_version < '3.13'",
 ]
@@ -37,6 +43,7 @@ explicit = true
 
 [tool.uv.sources]
 torch = { index = "pytorch-cuda" }
+torchvision = { index = "pytorch-cuda" }
 
 [tool.uv.workspace]
 members = [

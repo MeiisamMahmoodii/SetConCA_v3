@@ -3,6 +3,7 @@
   "temperature": 0.2,
   "top_p": 0.9,
   "max_new_tokens": 120,
+  "vlm_batch_size": 4,
   "min_output_chars": 20,
   "max_output_chars": 900,
   "min_views_per_set": 12,

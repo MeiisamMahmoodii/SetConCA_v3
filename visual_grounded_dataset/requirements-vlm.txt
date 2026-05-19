@@ -3,10 +3,16 @@
 # Install into the active project environment before using:
 #   uv pip install -r visual_grounded_dataset/requirements-vlm.txt
 #
-# Torch itself is managed by the main project. Torchvision must match the local
-# Torch build; if uv cannot resolve it automatically, install the torchvision
-# wheel from the same PyTorch index/version family as torch.
-torchvision
+# Torch is managed by pyproject.toml (cu130 index). Torchvision must be the
+# matching +cu130 wheel, not the generic PyPI build (mismatched builds raise
+# "operator torchvision::nms does not exist").
+#
+#   uv pip install -r visual_grounded_dataset/requirements-vlm.txt \
+#     --index-url https://download.pytorch.org/whl/cu130
+#
+# Or rely on [tool.uv.sources] torchvision = { index = "pytorch-cuda" } and:
+#   uv pip install -r visual_grounded_dataset/requirements-vlm.txt
+torchvision>=0.26.0
 qwen-vl-utils
 accelerate
 sentencepiece

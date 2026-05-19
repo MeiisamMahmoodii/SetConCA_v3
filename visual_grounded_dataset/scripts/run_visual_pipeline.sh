@@ -12,7 +12,18 @@ set -euo pipefail
 # Common overrides:
 #   DOWNLOAD_IMAGES=1000 LIMIT_IMAGES=1000 ./visual_grounded_dataset/scripts/run_visual_pipeline.sh "" qwen_1000_v2views
 #   LIMIT_IMAGES=50 ./visual_grounded_dataset/scripts/run_visual_pipeline.sh /path/to/images smoke_v2views
-#   PARALLEL_VLMS=1 VLM_GPU_QWEN3=0 VLM_GPU_QWEN25=1 ./visual_grounded_dataset/scripts/run_visual_pipeline.sh "" qwen_1000_v2views
+#
+# VLM generation (4 GPUs 0-3, shard Qwen3 then Qwen2.5 across all cards):
+#   VLM_GPUS=0,1,2,3 ./visual_grounded_dataset/scripts/run_visual_pipeline.sh "" qwen_500_v2views
+#
+# Both models at once (2 GPUs each):
+#   PARALLEL_VLMS=1 VLM_GPU_QWEN3=0,1 VLM_GPU_QWEN25=2,3 ./visual_grounded_dataset/scripts/run_visual_pipeline.sh "" run_name
+#
+# Legacy: one model per GPU, no sharding:
+#   VLM_SHARD=0 PARALLEL_VLMS=1 VLM_GPU_QWEN3=0 VLM_GPU_QWEN25=1 ...
+
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
+cd "$ROOT"
 
 IMAGE_DIR="${1:-}"
 RUN_NAME="${2:-pilot_qwen_1000img_v2views}"
@@ -32,9 +43,25 @@ LIMIT_LANGUAGES="${LIMIT_LANGUAGES:-4}"
 LIMIT_VIEWS="${LIMIT_VIEWS:-8}"
 MIN_VIEWS="${MIN_VIEWS:-48}"
 PROGRESS_EVERY="${PROGRESS_EVERY:-100}"
+VLM_BATCH_SIZE="${VLM_BATCH_SIZE:-4}"
+VLM_DTYPE="${VLM_DTYPE:-bfloat16}"
+
+# VLM generation layout
+# VLM_GPUS: comma-separated device ids (default: all GPUs from nvidia-smi)
+# VLM_EXCLUDE_GPUS: skip busy/shared GPUs (e.g. VLM_EXCLUDE_GPUS=3)
+# VLM_SHARD: auto|0|1 — auto enables sharding when 2+ GPUs are visible
+# PARALLEL_VLMS: 1 = run Qwen3 and Qwen2.5 worker groups concurrently
+# VLM_GPU_QWEN3 / VLM_GPU_QWEN25: one id or comma list per model (for PARALLEL_VLMS=1)
+VLM_GPUS="${VLM_GPUS:-}"
+VLM_EXCLUDE_GPUS="${VLM_EXCLUDE_GPUS:-}"
+VLM_SHARD="${VLM_SHARD:-auto}"
 PARALLEL_VLMS="${PARALLEL_VLMS:-0}"
 VLM_GPU_QWEN3="${VLM_GPU_QWEN3:-0}"
 VLM_GPU_QWEN25="${VLM_GPU_QWEN25:-1}"
+
+JOBS_FILE="visual_grounded_dataset/data/jobs/${RUN_NAME}_jobs.jsonl"
+GEN_SCRIPT="visual_grounded_dataset/scripts/generate_with_vlm.py"
+VLM_REQUIREMENTS="visual_grounded_dataset/requirements-vlm.txt"
 
 MODEL_ID="${MODEL_ID:-meta-llama/Llama-3.2-1B-Instruct}"
 LAYER="${LAYER:--1}"
@@ -47,43 +74,355 @@ TRAIN_BATCH_SIZE="${TRAIN_BATCH_SIZE:-16}"
 CONCEPT_DIM="${CONCEPT_DIM:-128}"
 TOPK="${TOPK:-32}"
 
-run_qwen3_generation() {
-  echo "[3/12] Generate Qwen3"
-  echo "- gpu: ${CUDA_VISIBLE_DEVICES:-all visible}"
-  uv run python visual_grounded_dataset/scripts/generate_with_vlm.py \
-    --jobs "visual_grounded_dataset/data/jobs/${RUN_NAME}_jobs.jsonl" \
-    --out "visual_grounded_dataset/data/responses/${RUN_NAME}_qwen3_raw.jsonl" \
-    --backend transformers \
-    --only-model-source qwen3_vl_4b \
-    --continue-on-error \
-    --resume \
-    --progress-every "$PROGRESS_EVERY"
+VLM_GPU_ARRAY=()
+
+parse_gpu_list() {
+  # Usage: parse_gpu_list "0,1,2"  -> sets reply array via stdout (caller reads)
+  local csv="$1"
+  local -a out=()
+  IFS=',' read -r -a out <<<"$csv"
+  for g in "${out[@]}"; do
+    g="${g//[[:space:]]/}"
+    [[ -n "$g" ]] || continue
+    printf '%s\n' "$g"
+  done
 }
 
-run_qwen25_generation() {
-  echo "[4/12] Generate Qwen2.5"
-  echo "- gpu: ${CUDA_VISIBLE_DEVICES:-all visible}"
-  uv run python visual_grounded_dataset/scripts/generate_with_vlm.py \
-    --jobs "visual_grounded_dataset/data/jobs/${RUN_NAME}_jobs.jsonl" \
-    --out "visual_grounded_dataset/data/responses/${RUN_NAME}_qwen2_5_raw.jsonl" \
-    --backend transformers \
-    --only-model-source qwen2_5_vl_7b \
-    --continue-on-error \
-    --resume \
-    --progress-every "$PROGRESS_EVERY"
+detect_vlm_gpus() {
+  VLM_GPU_ARRAY=()
+  if [[ -n "$VLM_GPUS" ]]; then
+    while IFS= read -r g; do
+      VLM_GPU_ARRAY+=("$g")
+    done < <(parse_gpu_list "$VLM_GPUS")
+  elif command -v nvidia-smi >/dev/null 2>&1; then
+    while IFS= read -r g; do
+      VLM_GPU_ARRAY+=("$g")
+    done < <(nvidia-smi --query-gpu=index --format=csv,noheader 2>/dev/null | tr -d ' ')
+  fi
+  if [[ ${#VLM_GPU_ARRAY[@]} -eq 0 ]]; then
+    VLM_GPU_ARRAY=(0)
+  fi
+  if [[ -n "$VLM_EXCLUDE_GPUS" ]]; then
+    local -a excluded=()
+    while IFS= read -r g; do
+      excluded+=("$g")
+    done < <(parse_gpu_list "$VLM_EXCLUDE_GPUS")
+    local -a kept=()
+    local gpu ex skip
+    for gpu in "${VLM_GPU_ARRAY[@]}"; do
+      skip=0
+      for ex in "${excluded[@]}"; do
+        if [[ "$gpu" == "$ex" ]]; then
+          skip=1
+          break
+        fi
+      done
+      if [[ "$skip" -eq 0 ]]; then
+        kept+=("$gpu")
+      fi
+    done
+    VLM_GPU_ARRAY=("${kept[@]}")
+  fi
+  if [[ ${#VLM_GPU_ARRAY[@]} -eq 0 ]]; then
+    echo "[vlm] no GPUs left after VLM_EXCLUDE_GPUS=$VLM_EXCLUDE_GPUS" >&2
+    exit 1
+  fi
 }
 
-mkdir -p \
-  visual_grounded_dataset/data/openimages \
-  visual_grounded_dataset/data/images \
-  visual_grounded_dataset/data/manifests \
-  visual_grounded_dataset/data/jobs \
-  visual_grounded_dataset/data/responses \
-  visual_grounded_dataset/data/sets \
-  visual_grounded_dataset/data/controls/"$RUN_NAME" \
-  visual_grounded_dataset/data/reports \
-  visual_grounded_dataset/data/activations \
-  visual_grounded_dataset/results
+resolve_vlm_shard_mode() {
+  if [[ "$VLM_SHARD" == "auto" ]]; then
+    if [[ ${#VLM_GPU_ARRAY[@]} -ge 2 ]]; then
+      VLM_SHARD=1
+    else
+      VLM_SHARD=0
+    fi
+  fi
+}
+
+ensure_vlm_deps() {
+  echo "[vlm] Installing / verifying VLM dependencies (torchvision must match torch+cu130)"
+  if [[ -f "$VLM_REQUIREMENTS" ]]; then
+    uv pip install -r "$VLM_REQUIREMENTS" >/dev/null
+  else
+    uv sync --extra vlm >/dev/null
+  fi
+  uv run python - <<'PY'
+import sys
+
+try:
+    import torch
+    import torchvision
+except ImportError as exc:
+    print(f"[vlm] missing package: {exc}", file=sys.stderr)
+    print(
+        "[vlm] run: uv pip install -r visual_grounded_dataset/requirements-vlm.txt",
+        file=sys.stderr,
+    )
+    sys.exit(1)
+
+tv = torchvision.__version__
+th = torch.__version__
+if "+cu" in th and "+cu" not in tv:
+    print(
+        f"[vlm] torchvision ({tv}) is not a CUDA-matched wheel for torch ({th}).",
+        file=sys.stderr,
+    )
+    print(
+        "[vlm] fix: uv pip install 'torchvision>=0.26.0' "
+        "--index-url https://download.pytorch.org/whl/cu130",
+        file=sys.stderr,
+    )
+    sys.exit(1)
+
+try:
+    import qwen_vl_utils  # noqa: F401
+    qwen_utils = "ok"
+except ImportError:
+    qwen_utils = "missing (Qwen2.5 will use slower generic pipeline fallback)"
+
+print(f"[vlm] torch {th} cuda={torch.cuda.is_available()}")
+print(f"[vlm] torchvision {tv}")
+print(f"[vlm] qwen-vl-utils {qwen_utils}")
+PY
+}
+
+count_model_jobs() {
+  local model_source="$1"
+  uv run python - "$JOBS_FILE" "$model_source" <<'PY'
+import json
+import sys
+
+jobs_path, model_source = sys.argv[1], sys.argv[2]
+count = 0
+with open(jobs_path, encoding="utf-8") as handle:
+    for line in handle:
+        job = json.loads(line)
+        if job["model"]["source_id"] == model_source:
+            count += 1
+print(count)
+PY
+}
+
+run_generation_worker() {
+  local gpu="$1"
+  local model_source="$2"
+  local out="$3"
+  local start="$4"
+  local limit="$5"
+  local log="$6"
+
+  local resume_args=()
+  if [[ -f "$out" ]]; then
+    resume_args=(--resume)
+  fi
+
+  mkdir -p "$(dirname "$out")" "$(dirname "$log")"
+  echo "[vlm] gpu=$gpu model=$model_source start=$start limit=$limit batch=$VLM_BATCH_SIZE dtype=$VLM_DTYPE -> $out"
+  (
+    export CUDA_VISIBLE_DEVICES="$gpu"
+    uv run python "$GEN_SCRIPT" \
+      --jobs "$JOBS_FILE" \
+      --out "$out" \
+      --backend transformers \
+      --only-model-source "$model_source" \
+      --start "$start" \
+      --limit "$limit" \
+      --batch-size "$VLM_BATCH_SIZE" \
+      --dtype "$VLM_DTYPE" \
+      --continue-on-error \
+      --progress-every "$PROGRESS_EVERY" \
+      "${resume_args[@]}"
+  ) >"$log" 2>&1
+}
+
+merge_shard_outputs() {
+  local final_out="$1"
+  shift
+  local -a shards=("$@")
+  mkdir -p "$(dirname "$final_out")"
+  : >"$final_out"
+  for shard in "${shards[@]}"; do
+    if [[ -f "$shard" ]]; then
+      cat "$shard" >>"$final_out"
+    fi
+  done
+  echo "[vlm] merged ${#shards[@]} shard(s) -> $final_out ($(wc -l <"$final_out") lines)"
+}
+
+run_sharded_model_generation() {
+  local model_source="$1"
+  local final_out="$2"
+  local log_prefix="$3"
+  shift 3
+  local -a gpus=("$@")
+
+  local total_jobs
+  total_jobs="$(count_model_jobs "$model_source")"
+  if [[ "$total_jobs" -eq 0 ]]; then
+    echo "[vlm] no jobs for $model_source in $JOBS_FILE" >&2
+    exit 1
+  fi
+
+  local n_gpus=${#gpus[@]}
+  local base_chunk=$((total_jobs / n_gpus))
+  local remainder=$((total_jobs % n_gpus))
+  local -a shard_files=()
+  local -a pids=()
+  local start=0
+  local i
+
+  echo "[vlm] $model_source: $total_jobs jobs across ${n_gpus} GPU(s): ${gpus[*]}"
+
+  for ((i = 0; i < n_gpus; i++)); do
+    local limit=$base_chunk
+    if [[ "$i" -lt "$remainder" ]]; then
+      limit=$((limit + 1))
+    fi
+    if [[ "$limit" -eq 0 ]]; then
+      continue
+    fi
+    local shard_out="visual_grounded_dataset/data/responses/${RUN_NAME}_${log_prefix}_gpu${gpus[$i]}.jsonl"
+    local shard_log="visual_grounded_dataset/data/reports/${RUN_NAME}_${log_prefix}_gpu${gpus[$i]}.log"
+    shard_files+=("$shard_out")
+    run_generation_worker "${gpus[$i]}" "$model_source" "$shard_out" "$start" "$limit" "$shard_log" &
+    pids+=("$!")
+    start=$((start + limit))
+  done
+
+  local fail=0
+  for pid in "${pids[@]}"; do
+    if ! wait "$pid"; then
+      fail=1
+    fi
+  done
+  if [[ "$fail" -ne 0 ]]; then
+    echo "[vlm] one or more $model_source shard workers failed; see ${RUN_NAME}_${log_prefix}_gpu*.log" >&2
+    return 1
+  fi
+
+  merge_shard_outputs "$final_out" "${shard_files[@]}"
+}
+
+run_single_model_generation() {
+  local model_source="$1"
+  local final_out="$2"
+  local log_path="$3"
+  local gpu="${4:-${VLM_GPU_ARRAY[0]}}"
+
+  local total_jobs
+  total_jobs="$(count_model_jobs "$model_source")"
+  mkdir -p "$(dirname "$final_out")" "$(dirname "$log_path")"
+  echo "[vlm] $model_source: $total_jobs jobs on gpu $gpu"
+  (
+    export CUDA_VISIBLE_DEVICES="$gpu"
+    local resume_args=()
+    if [[ -f "$final_out" ]]; then
+      resume_args=(--resume)
+    fi
+    uv run python "$GEN_SCRIPT" \
+      --jobs "$JOBS_FILE" \
+      --out "$final_out" \
+      --backend transformers \
+      --only-model-source "$model_source" \
+      --batch-size "$VLM_BATCH_SIZE" \
+      --dtype "$VLM_DTYPE" \
+      --continue-on-error \
+      --progress-every "$PROGRESS_EVERY" \
+      "${resume_args[@]}"
+  ) >"$log_path" 2>&1
+}
+
+run_model_on_gpus() {
+  local model_source="$1"
+  local final_out="$2"
+  local log_prefix="$3"
+  local gpu_csv="$4"
+
+  local -a gpus=()
+  while IFS= read -r g; do
+    gpus+=("$g")
+  done < <(parse_gpu_list "$gpu_csv")
+
+  if [[ ${#gpus[@]} -eq 0 ]]; then
+    echo "[vlm] empty GPU list for $model_source" >&2
+    exit 1
+  fi
+
+  if [[ "$VLM_SHARD" == "1" && ${#gpus[@]} -ge 2 ]]; then
+    run_sharded_model_generation "$model_source" "$final_out" "$log_prefix" "${gpus[@]}"
+  else
+    run_single_model_generation "$model_source" "$final_out" \
+      "visual_grounded_dataset/data/reports/${RUN_NAME}_${log_prefix}_generation.log" \
+      "${gpus[0]}"
+  fi
+}
+
+run_vlm_generation_phase() {
+  detect_vlm_gpus
+  resolve_vlm_shard_mode
+  ensure_vlm_deps
+
+  echo "[3-4/12] VLM generation"
+  echo "- repo: $ROOT"
+  echo "- jobs: $JOBS_FILE"
+  echo "- visible GPUs: ${VLM_GPU_ARRAY[*]}"
+  if [[ -n "$VLM_EXCLUDE_GPUS" ]]; then
+    echo "- excluded GPUs: $VLM_EXCLUDE_GPUS"
+  fi
+  echo "- VLM_SHARD: $VLM_SHARD"
+  echo "- PARALLEL_VLMS: $PARALLEL_VLMS"
+  echo "- VLM_BATCH_SIZE: $VLM_BATCH_SIZE (raise to use more VRAM; lower if OOM)"
+  echo "- VLM_DTYPE: $VLM_DTYPE"
+
+  local qwen3_out="visual_grounded_dataset/data/responses/${RUN_NAME}_qwen3_raw.jsonl"
+  local qwen25_out="visual_grounded_dataset/data/responses/${RUN_NAME}_qwen2_5_raw.jsonl"
+
+  if [[ "$PARALLEL_VLMS" == "1" ]]; then
+    local -a qwen3_gpus=() qwen25_gpus=()
+    while IFS= read -r g; do qwen3_gpus+=("$g"); done < <(parse_gpu_list "$VLM_GPU_QWEN3")
+    while IFS= read -r g; do qwen25_gpus+=("$g"); done < <(parse_gpu_list "$VLM_GPU_QWEN25")
+
+    if [[ ${#qwen3_gpus[@]} -eq 0 || ${#qwen25_gpus[@]} -eq 0 ]]; then
+      echo "PARALLEL_VLMS=1 requires non-empty VLM_GPU_QWEN3 and VLM_GPU_QWEN25" >&2
+      exit 1
+    fi
+
+    echo "- qwen3 GPUs: ${qwen3_gpus[*]}"
+    echo "- qwen2.5 GPUs: ${qwen25_gpus[*]}"
+
+    local q3_csv q25_csv
+    q3_csv=$(IFS=,; echo "${qwen3_gpus[*]}")
+    q25_csv=$(IFS=,; echo "${qwen25_gpus[*]}")
+
+    (
+      run_model_on_gpus "qwen3_vl_4b" "$qwen3_out" "qwen3" "$q3_csv"
+    ) &
+    local qwen3_pid=$!
+    (
+      run_model_on_gpus "qwen2_5_vl_7b" "$qwen25_out" "qwen2_5" "$q25_csv"
+    ) &
+    local qwen25_pid=$!
+
+    set +e
+    wait "$qwen3_pid"
+    local qwen3_status=$?
+    wait "$qwen25_pid"
+    local qwen25_status=$?
+    set -e
+
+    if [[ "$qwen3_status" -ne 0 || "$qwen25_status" -ne 0 ]]; then
+      echo "Parallel VLM generation failed: qwen3=$qwen3_status qwen2.5=$qwen25_status" >&2
+      exit 1
+    fi
+  else
+    local all_csv
+    all_csv=$(IFS=,; echo "${VLM_GPU_ARRAY[*]}")
+    echo "[3/12] Generate Qwen3"
+    run_model_on_gpus "qwen3_vl_4b" "$qwen3_out" "qwen3" "$all_csv"
+    echo "[4/12] Generate Qwen2.5"
+    run_model_on_gpus "qwen2_5_vl_7b" "$qwen25_out" "qwen2_5" "$all_csv"
+  fi
+}
 
 download_openimages_subset() {
   echo "[0/12] Download Open Images subset"
@@ -179,44 +518,13 @@ uv run python visual_grounded_dataset/scripts/scan_image_folder.py \
 echo "[2/12] Render jobs"
 uv run python visual_grounded_dataset/scripts/render_generation_jobs.py \
   --manifest "visual_grounded_dataset/data/manifests/${RUN_NAME}_manifest.jsonl" \
-  --out "visual_grounded_dataset/data/jobs/${RUN_NAME}_jobs.jsonl" \
+  --out "$JOBS_FILE" \
   --limit-images "$LIMIT_IMAGES" \
   --limit-models "$LIMIT_MODELS" \
   --limit-languages "$LIMIT_LANGUAGES" \
   --limit-views "$LIMIT_VIEWS"
 
-if [[ "$PARALLEL_VLMS" == "1" ]]; then
-  echo "[3-4/12] Generate Qwen3 and Qwen2.5 in parallel"
-  echo "- qwen3 gpu: $VLM_GPU_QWEN3"
-  echo "- qwen2.5 gpu: $VLM_GPU_QWEN25"
-  echo "- qwen3 log: visual_grounded_dataset/data/reports/${RUN_NAME}_qwen3_generation.log"
-  echo "- qwen2.5 log: visual_grounded_dataset/data/reports/${RUN_NAME}_qwen2_5_generation.log"
-  (
-    export CUDA_VISIBLE_DEVICES="$VLM_GPU_QWEN3"
-    run_qwen3_generation
-  ) > "visual_grounded_dataset/data/reports/${RUN_NAME}_qwen3_generation.log" 2>&1 &
-  qwen3_pid=$!
-  (
-    export CUDA_VISIBLE_DEVICES="$VLM_GPU_QWEN25"
-    run_qwen25_generation
-  ) > "visual_grounded_dataset/data/reports/${RUN_NAME}_qwen2_5_generation.log" 2>&1 &
-  qwen25_pid=$!
-
-  set +e
-  wait "$qwen3_pid"
-  qwen3_status=$?
-  wait "$qwen25_pid"
-  qwen25_status=$?
-  set -e
-
-  if [[ "$qwen3_status" -ne 0 || "$qwen25_status" -ne 0 ]]; then
-    echo "Parallel VLM generation failed: qwen3=$qwen3_status qwen2.5=$qwen25_status" >&2
-    exit 1
-  fi
-else
-  run_qwen3_generation
-  run_qwen25_generation
-fi
+run_vlm_generation_phase
 
 echo "[5/12] Filter responses"
 uv run python visual_grounded_dataset/scripts/filter_responses.py \

@@ -221,30 +221,34 @@ LIMIT_IMAGES=1000
 PROGRESS_EVERY=100
 ```
 
-To run the two Qwen VLM generators in parallel on two GPUs:
+**Default (4 GPUs):** auto-detect GPUs 0–3, shard each model across all cards
+(Qwen3 first, then Qwen2.5). Installs and checks `torchvision+cu130` before generation.
+
+```bash
+./visual_grounded_dataset/scripts/run_visual_pipeline.sh "" qwen_500_v2views
+```
+
+**Both models at once** (2 GPUs each, sharded within each model):
 
 ```bash
 PARALLEL_VLMS=1 \
-VLM_GPU_QWEN3=0 \
-VLM_GPU_QWEN25=1 \
-DOWNLOAD_IMAGES=1000 \
-LIMIT_IMAGES=1000 \
-./visual_grounded_dataset/scripts/run_visual_pipeline.sh "" qwen_1000_v2views
+VLM_GPU_QWEN3=0,1 \
+VLM_GPU_QWEN25=2,3 \
+./visual_grounded_dataset/scripts/run_visual_pipeline.sh "" qwen_500_v2views
 ```
 
-This starts one Qwen3-VL process with `CUDA_VISIBLE_DEVICES=0` and one
-Qwen2.5-VL process with `CUDA_VISIBLE_DEVICES=1`. Logs are written to:
-
-```text
-visual_grounded_dataset/data/reports/<run_name>_qwen3_generation.log
-visual_grounded_dataset/data/reports/<run_name>_qwen2_5_generation.log
-```
-
-Watch them while the run is active with:
+**Legacy:** one process per model, no sharding:
 
 ```bash
-tail -f visual_grounded_dataset/data/reports/qwen_1000_v2views_qwen3_generation.log
-tail -f visual_grounded_dataset/data/reports/qwen_1000_v2views_qwen2_5_generation.log
+PARALLEL_VLMS=1 VLM_SHARD=0 VLM_GPU_QWEN3=0 VLM_GPU_QWEN25=1 \
+  ./visual_grounded_dataset/scripts/run_visual_pipeline.sh "" qwen_1000_v2views
+```
+
+Shard logs: `visual_grounded_dataset/data/reports/<run_name>_qwen3_gpu0.log`, etc.
+Merged outputs: `<run_name>_qwen3_raw.jsonl`, `<run_name>_qwen2_5_raw.jsonl`.
+
+```bash
+tail -f visual_grounded_dataset/data/reports/qwen_500_v2views_qwen3_gpu0.log
 ```
 
 ## Causal/Artifact Claim
