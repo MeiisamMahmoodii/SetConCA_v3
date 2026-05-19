@@ -95,11 +95,25 @@ def main() -> None:
     parser.add_argument("--max-repeated-word-fraction", type=float, default=0.12)
     args = parser.parse_args()
 
+    source_rows = read_jsonl(args.sets)
+    print("Set diversity filter run")
+    print(f"- input: {args.sets}")
+    print(f"- output: {args.out}")
+    print(f"- rejected output: {args.rejected_out}")
+    print(f"- report: {args.report}")
+    print(f"- input sets: {len(source_rows)}")
+    print(f"- max mean content Jaccard: {args.max_mean_content_jaccard}")
+    print(f"- max pair content Jaccard: {args.max_pair_content_jaccard}")
+    print(f"- max repeated word fraction: {args.max_repeated_word_fraction}")
+    print("")
+
     kept = []
     rejected = []
     reason_counts: Counter[str] = Counter()
-    for row in read_jsonl(args.sets):
+    metric_rows = []
+    for row in source_rows:
         metrics = diversity_metrics(row)
+        metric_rows.append(metrics)
         keep, reasons = should_keep(metrics, args)
         row_with_metrics = {
             **row,
@@ -149,9 +163,22 @@ def main() -> None:
     target = Path(args.report)
     target.parent.mkdir(parents=True, exist_ok=True)
     target.write_text("\n".join(lines) + "\n", encoding="utf-8")
-    print(f"kept {len(kept)} / {len(kept) + len(rejected)} sets; report written to {args.report}")
+    print("Set diversity filter summary")
+    print(f"- kept: {len(kept)} / {len(kept) + len(rejected)}")
+    print(f"- rejected: {len(rejected)}")
+    if metric_rows:
+        mean_j = sum(item["mean_same_language_content_jaccard"] for item in metric_rows) / len(metric_rows)
+        max_j = max(item["max_same_language_content_jaccard"] for item in metric_rows)
+        mean_rep = sum(item["repeated_content_word_fraction"] for item in metric_rows) / len(metric_rows)
+        print(f"- mean content Jaccard across sets: {mean_j:.3f}")
+        print(f"- max pair content Jaccard across sets: {max_j:.3f}")
+        print(f"- mean repeated word fraction: {mean_rep:.3f}")
+    if reason_counts:
+        print("- rejection reasons:")
+        for reason, count in reason_counts.most_common():
+            print(f"  - {reason}: {count}")
+    print(f"- report: {args.report}")
 
 
 if __name__ == "__main__":
     main()
-

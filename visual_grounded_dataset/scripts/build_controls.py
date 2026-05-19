@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import random
+from collections import Counter
 from pathlib import Path
 
 from vg_common import read_jsonl, stable_hash, write_jsonl
@@ -29,6 +30,13 @@ def main() -> None:
     rng = random.Random(args.seed)
     sets = read_jsonl(args.sets)
     all_texts = [text for row in sets for text in row.get("texts", [])]
+    print("Build controls run")
+    print(f"- sets: {args.sets}")
+    print(f"- out dir: {args.out_dir}")
+    print(f"- seed: {args.seed}")
+    print(f"- input sets: {len(sets)}")
+    print(f"- input views: {len(all_texts)}")
+    print("")
     by_language: dict[str, list[dict]] = {}
     by_prompt: dict[str, list[dict]] = {}
     by_model: dict[str, list[dict]] = {}
@@ -74,9 +82,13 @@ def main() -> None:
     write_jsonl(out_dir / "controls_same_language_different_image.jsonl", same_language)
     write_jsonl(out_dir / "controls_same_prompt_different_image.jsonl", same_prompt)
     write_jsonl(out_dir / "controls_same_model_different_image.jsonl", same_model)
-    print(f"wrote controls to {out_dir}")
+    print("Build controls summary")
+    print(f"- shuffled_image sets: {len(shuffled)}")
+    print(f"- same_language_different_image sets: {len(same_language)}")
+    print(f"- same_prompt_different_image sets: {len(same_prompt)}")
+    print(f"- same_model_different_image sets: {len(same_model)}")
+    print(f"- out dir: {out_dir}")
 
 
 if __name__ == "__main__":
     main()
-

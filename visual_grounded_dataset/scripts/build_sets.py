@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import argparse
-from collections import defaultdict
+from collections import Counter, defaultdict
 
 from vg_common import read_jsonl, stable_hash, write_jsonl
 
@@ -33,12 +33,21 @@ def main() -> None:
     args = parser.parse_args()
 
     grouped: dict[str, list[dict]] = defaultdict(list)
-    for row in read_jsonl(args.responses):
+    response_rows = read_jsonl(args.responses)
+    print("Build sets run")
+    print(f"- responses: {args.responses}")
+    print(f"- output: {args.out}")
+    print(f"- input responses: {len(response_rows)}")
+    print(f"- min views: {args.min_views}")
+    print("")
+    for row in response_rows:
         grouped[str(row["image_id"])].append(row)
 
     sets = []
+    dropped = []
     for image_id, rows in sorted(grouped.items()):
         if len(rows) < args.min_views:
+            dropped.append((image_id, len(rows)))
             continue
         first = rows[0]
         source_dataset = first.get("source_dataset", "unknown")
@@ -72,9 +81,26 @@ def main() -> None:
         )
 
     write_jsonl(args.out, sets)
-    print(f"wrote {len(sets)} visual-scene sets to {args.out}")
+    view_counts = [len(row["texts"]) for row in sets]
+    model_counts = Counter()
+    language_counts = Counter()
+    prompt_counts = Counter()
+    for row in sets:
+        for text in row["texts"]:
+            model_counts[text["source_id"]] += 1
+            language_counts[text["metadata"]["language_code"]] += 1
+            prompt_counts[text["metadata"]["prompt_view"]] += 1
+    print("Build sets summary")
+    print(f"- grouped images: {len(grouped)}")
+    print(f"- kept sets: {len(sets)}")
+    print(f"- dropped images below min views: {len(dropped)}")
+    if view_counts:
+        print(f"- view count min/mean/max: {min(view_counts)} / {sum(view_counts)/len(view_counts):.2f} / {max(view_counts)}")
+    print(f"- models: {dict(model_counts)}")
+    print(f"- languages: {dict(language_counts)}")
+    print(f"- prompt views: {dict(prompt_counts)}")
+    print(f"- output: {args.out}")
 
 
 if __name__ == "__main__":
     main()
-

@@ -34,6 +34,14 @@ def main() -> None:
     args = parser.parse_args()
 
     rows = read_jsonl(args.responses)
+    print("Filter run")
+    print(f"- input: {args.responses}")
+    print(f"- output: {args.out}")
+    print(f"- report: {args.report}")
+    print(f"- rows: {len(rows)}")
+    print(f"- min chars: {args.min_chars}")
+    print(f"- max chars: {args.max_chars}")
+    print("")
     seen_by_image: dict[str, set[str]] = defaultdict(set)
     accepted = []
     rejected = []
@@ -71,7 +79,15 @@ def main() -> None:
     target = Path(args.report)
     target.parent.mkdir(parents=True, exist_ok=True)
     target.write_text("\n".join(lines) + "\n", encoding="utf-8")
-    print(f"accepted {len(accepted)} / {len(rows)} responses; report written to {args.report}")
+    rate = len(accepted) / len(rows) if rows else 0.0
+    print("Filter summary")
+    print(f"- accepted: {len(accepted)} / {len(rows)} ({rate:.1%})")
+    print(f"- rejected: {len(rejected)}")
+    if reason_counts:
+        print("- rejection reasons:")
+        for reason, count in reason_counts.most_common():
+            print(f"  - {reason}: {count}")
+    print(f"- report: {args.report}")
 
 
 if __name__ == "__main__":

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 from pathlib import Path
+from statistics import mean
 
 from vg_common import read_jsonl, write_jsonl
 
@@ -62,11 +63,18 @@ def main() -> None:
     )
     args = parser.parse_args()
 
-    rows = [convert_row(row, mode=args.mode) for row in read_jsonl(args.sets)]
+    source_rows = read_jsonl(args.sets)
+    rows = [convert_row(row, mode=args.mode) for row in source_rows]
     write_jsonl(args.out, rows)
-    print(f"wrote {len(rows)} activation-ready rows to {args.out}")
+    rewrite_counts = [len(row.get("rewrites", [])) for row in rows]
+    print("Activation conversion summary")
+    print(f"- input: {args.sets}")
+    print(f"- output: {args.out}")
+    print(f"- mode: {args.mode}")
+    print(f"- rows: {len(rows)}")
+    if rewrite_counts:
+        print(f"- rewrites per row min/mean/max: {min(rewrite_counts)} / {mean(rewrite_counts):.2f} / {max(rewrite_counts)}")
 
 
 if __name__ == "__main__":
     main()
-

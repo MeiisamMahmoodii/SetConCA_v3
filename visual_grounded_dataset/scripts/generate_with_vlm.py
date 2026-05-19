@@ -3,7 +3,11 @@ from __future__ import annotations
 import argparse
 import json
 import math
+import os
 import sys
+import time
+import warnings
+from collections import Counter
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Protocol
@@ -11,6 +15,25 @@ from typing import Any, Protocol
 from PIL import Image
 
 from vg_common import compact_text, read_json, read_jsonl, stable_hash, write_jsonl
+
+
+def quiet_common_warnings() -> None:
+    os.environ.setdefault("HF_HUB_DISABLE_SYMLINKS_WARNING", "1")
+    os.environ.setdefault("TOKENIZERS_PARALLELISM", "false")
+    warnings.filterwarnings("ignore", message=r".*cache-system uses symlinks.*")
+    warnings.filterwarnings("ignore", message=r".*`torch_dtype` is deprecated.*")
+    warnings.filterwarnings("ignore", message=r".*Passing `generation_config` together with generation-related arguments.*")
+    warnings.filterwarnings("ignore", message=r".*Both `max_new_tokens`.*")
+    warnings.filterwarnings("ignore", message=r".*Keyword argument `do_sample` is not a valid argument.*")
+    warnings.filterwarnings("ignore", message=r".*Keyword argument `temperature` is not a valid argument.*")
+    warnings.filterwarnings("ignore", message=r".*Keyword argument `top_p` is not a valid argument.*")
+    warnings.filterwarnings("ignore", message=r".*Kwargs passed to `processor.__call__`.*")
+    try:
+        from transformers.utils import logging as transformers_logging
+
+        transformers_logging.set_verbosity_error()
+    except Exception:
+        pass
 
 
 class VLMAdapter(Protocol):
@@ -338,6 +361,7 @@ def existing_response_ids(path: str | None) -> set[str]:
 
 
 def main() -> None:
+    quiet_common_warnings()
     parser = argparse.ArgumentParser(description="Generate image descriptions for rendered jobs.")
     parser.add_argument("--jobs", required=True)
     parser.add_argument("--out", required=True)
@@ -348,6 +372,7 @@ def main() -> None:
     parser.add_argument("--start", type=int, default=0, help="Skip this many selected jobs before generation.")
     parser.add_argument("--resume", action="store_true", help="Append to --out and skip existing response IDs.")
     parser.add_argument("--continue-on-error", action="store_true", help="Write error rows instead of stopping on generation errors.")
+    parser.add_argument("--progress-every", type=int, default=25, help="Print progress every N generated jobs.")
     parser.add_argument("--device-map", default="auto", help="Transformers device_map; use 'none' for adapters that should not pass it.")
     parser.add_argument("--dtype", default="auto", help="Transformers dtype. Use 'none' to omit dtype.")
     parser.add_argument("--image-ref-mode", choices=["file_uri", "path", "pil"], default="file_uri")
@@ -355,7 +380,8 @@ def main() -> None:
     args = parser.parse_args()
 
     generation_config = read_json(args.generation_config)
-    jobs = read_jsonl(args.jobs)
+    all_jobs = read_jsonl(args.jobs)
+    jobs = all_jobs
     if args.only_model_source:
         jobs = [job for job in jobs if job["model"]["source_id"] == args.only_model_source]
     jobs = jobs[args.start :]
@@ -365,14 +391,33 @@ def main() -> None:
         jobs = sorted(jobs, key=lambda job: job["model"]["source_id"])
 
     skip_ids = existing_response_ids(args.out) if args.resume else set()
+    selected_before_skip = len(jobs)
+    jobs = [job for job in jobs if stable_hash({"job_id": job["job_id"], "backend": args.backend}) not in skip_ids]
+    model_counts = Counter(job["model"]["source_id"] for job in jobs)
+    language_counts = Counter(job["language"]["code"] for job in jobs)
+    view_counts = Counter(job["view"]["view_id"] for job in jobs)
+    print("Generation run")
+    print(f"- jobs file: {args.jobs}")
+    print(f"- output: {args.out}")
+    print(f"- backend: {args.backend}")
+    print(f"- total jobs in file: {len(all_jobs)}")
+    print(f"- selected jobs before resume skip: {selected_before_skip}")
+    print(f"- skipped existing responses: {selected_before_skip - len(jobs)}")
+    print(f"- jobs to generate: {len(jobs)}")
+    print(f"- models: {dict(model_counts)}")
+    print(f"- languages: {dict(language_counts)}")
+    print(f"- views: {dict(view_counts)}")
+    print("", flush=True)
+
     mode = "a" if args.resume else "w"
     rows = []
     adapter: VLMAdapter | None = None
     loaded_source_id: str | None = None
+    generated = 0
+    errors = 0
+    started = time.time()
     for index, job in enumerate(jobs, start=1):
         response_id_base = stable_hash({"job_id": job["job_id"], "backend": args.backend})
-        if response_id_base in skip_ids:
-            continue
         status = "ok"
         error = None
         try:
@@ -381,8 +426,11 @@ def main() -> None:
             else:
                 source_id = job["model"]["source_id"]
                 if adapter is None or source_id != loaded_source_id:
+                    print(f"Loading model adapter: {source_id} ({job['model']['model_id']})", flush=True)
+                    load_started = time.time()
                     adapter = make_adapter(job["model"], args)
                     loaded_source_id = source_id
+                    print(f"Loaded {source_id} in {time.time() - load_started:.1f}s", flush=True)
                 output_text = adapter.generate(job, generation_config)
         except Exception as exc:
             if not args.continue_on_error:
@@ -390,6 +438,7 @@ def main() -> None:
             output_text = ""
             status = "error"
             error = repr(exc)
+            errors += 1
 
         rows.append(
             {
@@ -416,8 +465,16 @@ def main() -> None:
                 "backend": args.backend,
             }
         )
-        if index % 10 == 0:
-            print(f"generated {index}/{len(jobs)} selected jobs", flush=True)
+        generated += 1
+        if generated == 1 or generated % args.progress_every == 0 or generated == len(jobs):
+            elapsed = time.time() - started
+            rate = generated / elapsed if elapsed > 0 else 0.0
+            remaining = (len(jobs) - generated) / rate if rate > 0 else 0.0
+            print(
+                f"progress {generated}/{len(jobs)} | ok={generated - errors} error={errors} "
+                f"| {rate:.2f} jobs/s | elapsed={elapsed/60:.1f}m eta={remaining/60:.1f}m",
+                flush=True,
+            )
 
     if args.resume:
         target = Path(args.out)
@@ -427,7 +484,14 @@ def main() -> None:
                 handle.write(json.dumps(row, ensure_ascii=False) + "\n")
     else:
         write_jsonl(args.out, rows)
-    print(f"wrote {len(rows)} raw responses to {args.out}")
+    elapsed = time.time() - started
+    print("")
+    print("Generation summary")
+    print(f"- wrote rows: {len(rows)}")
+    print(f"- ok: {len(rows) - errors}")
+    print(f"- errors: {errors}")
+    print(f"- elapsed: {elapsed/60:.2f} min")
+    print(f"- output: {args.out}")
 
 
 if __name__ == "__main__":
