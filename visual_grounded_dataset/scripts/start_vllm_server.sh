@@ -16,6 +16,13 @@ MAX_MODEL_LEN="${VLLM_MAX_MODEL_LEN:-8192}"
 GPU_MEMORY_UTILIZATION="${VLLM_GPU_MEMORY_UTILIZATION:-0.90}"
 LIMIT_MM_PER_PROMPT="${VLLM_LIMIT_MM_PER_PROMPT:-{\"image\":1}}"
 EXTRA_ARGS="${VLLM_EXTRA_ARGS:-}"
+if [[ -n "${VLLM_CMD:-}" ]]; then
+  VLLM_LAUNCH=($VLLM_CMD)
+elif command -v vllm >/dev/null 2>&1; then
+  VLLM_LAUNCH=(vllm)
+else
+  VLLM_LAUNCH=(uv run vllm)
+fi
 
 case "$MODEL_SOURCE" in
   qwen3_vl_4b)
@@ -56,8 +63,9 @@ echo "- host: $HOST"
 echo "- port: $PORT"
 echo "- tensor parallel size: $TP_SIZE"
 echo "- CUDA_VISIBLE_DEVICES: ${CUDA_VISIBLE_DEVICES:-<unset>}"
+echo "- launcher: ${VLLM_LAUNCH[*]}"
 
-exec vllm serve "$MODEL_ID" \
+exec "${VLLM_LAUNCH[@]}" serve "$MODEL_ID" \
   --host "$HOST" \
   --port "$PORT" \
   --tensor-parallel-size "$TP_SIZE" \

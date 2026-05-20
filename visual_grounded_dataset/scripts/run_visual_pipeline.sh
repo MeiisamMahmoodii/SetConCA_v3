@@ -304,6 +304,7 @@ render_jobs() {
   uv run python visual_grounded_dataset/scripts/render_generation_jobs.py \
     --manifest "$MANIFEST" \
     --out "$JOBS" \
+    --model-sources "$VLM_MODELS" \
     --limit-images "$LIMIT_IMAGES" \
     --limit-models "$LIMIT_MODELS" \
     --limit-languages "$LIMIT_LANGUAGES" \

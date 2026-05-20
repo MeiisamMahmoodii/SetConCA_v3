@@ -10,18 +10,33 @@ def limited(items: list[dict], limit: int | None) -> list[dict]:
     return list(islice(items, limit)) if limit is not None else items
 
 
+def select_models(models: list[dict], sources_csv: str | None, limit: int | None) -> list[dict]:
+    if not sources_csv:
+        return limited(models, limit)
+
+    requested = [source.strip() for source in sources_csv.split(",") if source.strip()]
+    by_source = {model["source_id"]: model for model in models}
+    missing = [source for source in requested if source not in by_source]
+    if missing:
+        known = ", ".join(sorted(by_source))
+        raise SystemExit(f"unknown model source(s): {', '.join(missing)}. Known: {known}")
+    selected = [by_source[source] for source in requested]
+    return limited(selected, limit)
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description="Render VLM generation jobs from image/model/language/view configs.")
     parser.add_argument("--manifest", required=True)
     parser.add_argument("--out", required=True)
     parser.add_argument("--limit-images", type=int)
     parser.add_argument("--limit-models", type=int)
+    parser.add_argument("--model-sources", help="Comma-separated model source_id list to render, preserving order.")
     parser.add_argument("--limit-languages", type=int)
     parser.add_argument("--limit-views", type=int)
     args = parser.parse_args()
 
     images = limited(read_jsonl(args.manifest), args.limit_images)
-    models = limited(load_enabled_models(), args.limit_models)
+    models = select_models(load_enabled_models(), args.model_sources, args.limit_models)
     languages = limited(load_languages(), args.limit_languages)
     views, template = load_views()
 
@@ -55,4 +70,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-
