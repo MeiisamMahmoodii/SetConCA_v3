@@ -64,8 +64,8 @@ The generator supports:
 Configured real adapters:
 
 - `generic_pipeline`: Hugging Face `pipeline("image-text-to-text")`.
-- `qwen_vl`: Qwen2.5-VL path with `qwen-vl-utils` when available, otherwise
-  generic pipeline fallback.
+- `qwen_vl`: direct Qwen2.5-VL/Qwen3-VL path with `qwen-vl-utils` when
+  available, otherwise generic pipeline fallback.
 - `internvl_chat`: InternVL chat API with local image tiling.
 - `gemma4_multimodal`: Gemma 4 multimodal API.
 
@@ -92,6 +92,36 @@ python visual_grounded_dataset\scripts\generate_with_vlm.py `
 ```
 
 Then scale the same command by removing `--limit`.
+
+### Local Single-Model Generation
+
+The local/manual command path is intentionally conservative. If you omit
+`--batch-size`, it defaults to `1`, and Qwen uses the original one-image
+`qwen-vl-utils` flow. This is the safest path for Windows/local runs and should
+continue to work with existing raw response files and `--resume`.
+
+Example for Qwen2.5-VL:
+
+```powershell
+uv run python visual_grounded_dataset\scripts\generate_with_vlm.py `
+  --jobs visual_grounded_dataset\data\jobs\pilot_qwen_500img_v2views_jobs.jsonl `
+  --out visual_grounded_dataset\data\responses\pilot_qwen2_5_500img_v2views_raw.jsonl `
+  --backend transformers `
+  --only-model-source qwen2_5_vl_7b `
+  --continue-on-error `
+  --resume
+```
+
+Optional speed knobs for machines where you have already verified the model
+fits:
+
+```powershell
+  --batch-size 2
+  --device-map single
+```
+
+Use `--device-map single` only when the selected process should keep the model
+on one visible GPU. The default remains `auto`.
 
 ## Folder Layout
 
@@ -195,7 +225,7 @@ python visual_grounded_dataset\scripts\artifact_audit.py `
 
 ## Linux End-To-End Script
 
-For Linux/zsh/bash environments, use:
+For Linux/zsh/bash environments, use the phase-based runner:
 
 ```bash
 chmod +x visual_grounded_dataset/scripts/run_visual_pipeline.sh
@@ -214,6 +244,8 @@ LIMIT_IMAGES=500 \
 Useful overrides:
 
 ```bash
+DATA_DIR=visual_grounded_dataset/data_server
+VLM_BACKEND=vllm_openai
 DOWNLOAD_IMAGES=2000
 DOWNLOAD_SPLIT=train
 DOWNLOAD_PROCESSES=16
@@ -223,8 +255,110 @@ VLM_BATCH_SIZE=4
 VLM_DEVICE_MAP=single
 ```
 
-**Default (4 GPUs):** auto-detect GPUs 0–3, shard each model across all cards
-(Qwen3 first, then Qwen2.5). Installs and checks `torchvision+cu130` before generation.
+### Runner Phases
+
+The runner can execute the whole pipeline or only selected phases:
+
+```bash
+PHASES=images,manifest,jobs,generate,filter,sets,export,controls,activations,train
+```
+
+The server default is:
+
+```bash
+PHASES=images,manifest,jobs,generate,filter,sets,export
+```
+
+That means the server produces one portable dataset file and stops before local
+activation extraction or SetConCA training:
+
+```text
+visual_grounded_dataset/data_server/export/<run_name>_dataset.jsonl
+```
+
+Useful recovery examples:
+
+```bash
+# Reuse downloaded images and responses; rebuild filtered files and sets.
+DATA_DIR=visual_grounded_dataset/data_server \
+PHASES=filter,sets,export \
+./visual_grounded_dataset/scripts/run_visual_pipeline.sh "" qwen_500_v2views
+
+# Rerun only Qwen3 generation, then rebuild downstream.
+DATA_DIR=visual_grounded_dataset/data_server \
+VLM_MODELS=qwen3_vl_4b \
+PHASES=generate,filter,sets,export \
+./visual_grounded_dataset/scripts/run_visual_pipeline.sh "" qwen_500_v2views
+
+# Build a one-model Qwen2.5 dataset from already filtered responses.
+DATA_DIR=visual_grounded_dataset/data_server \
+VLM_MODELS=qwen2_5_vl_7b \
+MIN_VIEWS=24 \
+PHASES=filter,sets,export \
+./visual_grounded_dataset/scripts/run_visual_pipeline.sh "" qwen_500_v2views
+```
+
+### Server Generation Modes
+
+#### vLLM Backend
+
+vLLM supports the current Qwen2.5-VL and Qwen3-VL model families through its
+OpenAI-compatible multimodal API. Start one vLLM server per model, then point
+the runner at those servers.
+
+Example, two terminals:
+
+```bash
+CUDA_VISIBLE_DEVICES=0,1 \
+  ./visual_grounded_dataset/scripts/start_vllm_server.sh qwen3_vl_4b 8001 2
+```
+
+```bash
+CUDA_VISIBLE_DEVICES=2,3 \
+  ./visual_grounded_dataset/scripts/start_vllm_server.sh qwen2_5_vl_7b 8002 2
+```
+
+The helper currently knows these model source IDs:
+
+```text
+qwen3_vl_4b
+qwen2_5_vl_7b
+internvl3_8b
+gemma4_e4b_it
+gemma3_4b_it
+aya_vision_8b
+paligemma2_3b_mix
+qwen3_vl_8b
+```
+
+Then generate the portable dataset:
+
+```bash
+DATA_DIR=visual_grounded_dataset/data_server \
+VLM_BACKEND=vllm_openai \
+VLM_MODELS=qwen3_vl_4b,qwen2_5_vl_7b \
+VLLM_BASE_URL_QWEN3=http://127.0.0.1:8001/v1 \
+VLLM_BASE_URL_QWEN2_5=http://127.0.0.1:8002/v1 \
+VLM_BATCH_SIZE=16 \
+VLLM_REQUEST_CONCURRENCY=16 \
+PARALLEL_MODELS=1 \
+PHASES=images,manifest,jobs,generate,filter,sets,export \
+./visual_grounded_dataset/scripts/run_visual_pipeline.sh "" qwen_500_v2views
+```
+
+`VLM_BATCH_SIZE` and `VLLM_REQUEST_CONCURRENCY` control how many independent
+requests the client sends concurrently. Each generated view is still a separate
+request and remains a separate dataset row.
+
+When `VLM_BACKEND=vllm_openai`, `VLM_SHARD=auto` uses one client process per
+model because the vLLM server already handles request batching. Set
+`VLM_SHARD=1` only if you deliberately want multiple client processes per
+model server.
+
+**Default server run:** auto-detect visible GPUs, split each model's jobs across
+those GPUs, run Qwen3 first, then Qwen2.5. Each worker keeps one model loaded
+for its job shard. Dependency installation is not repeated unless
+`INSTALL_VLM_DEPS=1`; dependency checking is controlled by `CHECK_VLM_DEPS`.
 
 ```bash
 ./visual_grounded_dataset/scripts/run_visual_pipeline.sh "" qwen_500_v2views
@@ -233,18 +367,18 @@ VLM_DEVICE_MAP=single
 **Exclude a busy GPU** (e.g. shared with another user):
 
 ```bash
-VLM_EXCLUDE_GPUS=3 VLM_GPUS=0,1,2 VLM_BATCH_SIZE=16 \
+VLM_EXCLUDE_GPUS=3 VLM_GPUS=0,1,2 VLM_BATCH_SIZE=8 \
   ./visual_grounded_dataset/scripts/run_visual_pipeline.sh "" qwen_500_v2views
 ```
 
-**Both models at once** (2 GPUs each, sharded within each model):
+**Both models at once** (2 GPUs assigned to each model, data-parallel job
+shards):
 
 ```bash
-PARALLEL_VLMS=1 \
+PARALLEL_MODELS=1 \
 VLM_DEVICE_MAP=single \
 VLM_BATCH_SIZE=4 \
-VLM_GPU_QWEN3=0,1 \
-VLM_GPU_QWEN25=2,3 \
+VLM_GPUS=0,1,2,3 \
 ./visual_grounded_dataset/scripts/run_visual_pipeline.sh "" qwen_500_v2views
 ```
 
@@ -252,19 +386,53 @@ VLM_GPU_QWEN25=2,3 \
 model fits). If you hit OOM, lower `VLM_BATCH_SIZE` first, then try
 `VLM_DEVICE_MAP=auto` as a slower fallback.
 
-**Legacy:** one process per model, no sharding:
+**One process per model, no job sharding:**
 
 ```bash
-PARALLEL_VLMS=1 VLM_SHARD=0 VLM_GPU_QWEN3=0 VLM_GPU_QWEN25=1 \
+PARALLEL_MODELS=1 VLM_SHARD=0 VLM_GPUS=0,1 \
   ./visual_grounded_dataset/scripts/run_visual_pipeline.sh "" qwen_1000_v2views
 ```
 
-Shard logs: `visual_grounded_dataset/data/reports/<run_name>_qwen3_gpu0.log`, etc.
-Merged outputs: `<run_name>_qwen3_raw.jsonl`, `<run_name>_qwen2_5_raw.jsonl`.
+Shard logs: `visual_grounded_dataset/data/reports/<run_name>_qwen3_gpu0.log`,
+etc. Merged outputs: `<run_name>_qwen3_raw.jsonl`,
+`<run_name>_qwen2_5_raw.jsonl`.
 
 ```bash
 tail -f visual_grounded_dataset/data/reports/qwen_500_v2views_qwen3_gpu0.log
 ```
+
+### Generation Troubleshooting
+
+If the log repeatedly prints `Loading model adapter` and `Loading weights`, the
+model setup is failing and being retried. Current `generate_with_vlm.py` treats
+model-load failure as fatal so the real error is visible immediately. Per-image
+generation failures can still be recorded with `--continue-on-error`.
+
+A healthy worker log should show one model-load block, then progress:
+
+```text
+Loading model adapter: qwen2_5_vl_7b (...)
+Loaded qwen2_5_vl_7b in ...
+progress ...
+```
+
+### Local Use After Server Generation
+
+Move only the portable dataset JSONL back to the local PC:
+
+```text
+visual_grounded_dataset/data_server/export/qwen_500_v2views_dataset.jsonl
+```
+
+Place it anywhere convenient, for example:
+
+```text
+visual_grounded_dataset/data/sets/qwen_500_v2views_dataset.jsonl
+```
+
+Then continue locally with controls, activation conversion, activation
+extraction, and SetConCA training. The image files are not needed for those
+steps because the dataset file already contains the generated text views.
 
 ## Causal/Artifact Claim
 

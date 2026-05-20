@@ -1,15 +1,20 @@
 from __future__ import annotations
 
 import argparse
+import base64
 import json
 import math
+import mimetypes
 import os
 import sys
 import time
+import urllib.error
+import urllib.request
 import warnings
 from collections import Counter
 from datetime import datetime, timezone
 from pathlib import Path
+from concurrent.futures import ThreadPoolExecutor
 from typing import Any, Protocol
 
 from PIL import Image
@@ -128,6 +133,13 @@ def image_ref(path: str, mode: str) -> Any:
     raise ValueError(f"unknown image ref mode: {mode}")
 
 
+def image_data_url(path: str) -> str:
+    resolved = Path(path).resolve()
+    mime_type = mimetypes.guess_type(str(resolved))[0] or "image/jpeg"
+    encoded = base64.b64encode(resolved.read_bytes()).decode("ascii")
+    return f"data:{mime_type};base64,{encoded}"
+
+
 def decode_pipeline_output(output: Any) -> str:
     if isinstance(output, str):
         return compact_text(output)
@@ -144,6 +156,65 @@ def decode_pipeline_output(output: Any) -> str:
                     return compact_text(str(content))
                 return compact_text(str(value))
     return compact_text(str(output))
+
+
+class VLLMOpenAIAdapter:
+    def __init__(self, model_id: str, *, base_url: str, api_key: str, timeout_s: float, request_concurrency: int) -> None:
+        self.model_id = model_id
+        self.base_url = base_url.rstrip("/")
+        self.api_key = api_key
+        self.timeout_s = timeout_s
+        self.request_concurrency = max(1, request_concurrency)
+
+    def _chat_completion(self, payload: dict[str, Any]) -> dict[str, Any]:
+        url = f"{self.base_url}/chat/completions"
+        body = json.dumps(payload).encode("utf-8")
+        request = urllib.request.Request(
+            url,
+            data=body,
+            headers={
+                "Content-Type": "application/json",
+                "Authorization": f"Bearer {self.api_key}",
+            },
+            method="POST",
+        )
+        try:
+            with urllib.request.urlopen(request, timeout=self.timeout_s) as response:
+                return json.loads(response.read().decode("utf-8"))
+        except urllib.error.HTTPError as exc:
+            detail = exc.read().decode("utf-8", errors="replace")
+            raise RuntimeError(f"vLLM OpenAI HTTP {exc.code}: {detail}") from exc
+
+    def generate(self, job: dict[str, Any], generation_config: dict[str, Any]) -> str:
+        payload = {
+            "model": self.model_id,
+            "messages": [
+                {
+                    "role": "user",
+                    "content": [
+                        {"type": "image_url", "image_url": {"url": image_data_url(job["image"]["image_path"])}},
+                        {"type": "text", "text": job["prompt"]},
+                    ],
+                }
+            ],
+            "max_tokens": int(generation_config.get("max_new_tokens", 120)),
+            "temperature": float(generation_config.get("temperature", 0.0)),
+            "top_p": float(generation_config.get("top_p", 0.9)),
+        }
+        data = self._chat_completion(payload)
+        choices = data.get("choices") or []
+        if not choices:
+            raise RuntimeError(f"vLLM OpenAI response has no choices: {data}")
+        message = choices[0].get("message") or {}
+        content = message.get("content", "")
+        if isinstance(content, list):
+            content = " ".join(str(item.get("text", "")) for item in content if isinstance(item, dict))
+        return compact_text(str(content))
+
+    def generate_batch(self, jobs: list[dict[str, Any]], generation_config: dict[str, Any], batch_size: int) -> list[str]:
+        workers = max(1, min(self.request_concurrency, batch_size, len(jobs)))
+        with ThreadPoolExecutor(max_workers=workers) as executor:
+            return list(executor.map(lambda job: self.generate(job, generation_config), jobs))
 
 
 class GenericPipelineAdapter:
@@ -297,11 +368,13 @@ class QwenVLAdapter(AutoImageTextAdapter):
         )
 
     def generate(self, job: dict[str, Any], generation_config: dict[str, Any]) -> str:
-        return self.generate_batch([job], generation_config, batch_size=1)[0]
+        return self.generate_one_by_one(job, generation_config)
 
     def generate_batch(self, jobs: list[dict[str, Any]], generation_config: dict[str, Any], batch_size: int) -> list[str]:
         if self._fallback is not None:
             return self._fallback.generate_batch(jobs, generation_config, batch_size)
+        if len(jobs) == 1:
+            return [self.generate_one_by_one(jobs[0], generation_config)]
 
         from qwen_vl_utils import process_vision_info
 
@@ -338,6 +411,41 @@ class QwenVLAdapter(AutoImageTextAdapter):
             )
         decoded = self.processor.batch_decode(outputs[:, input_len:], skip_special_tokens=True)
         return [compact_text(text) for text in decoded]
+
+    def generate_one_by_one(self, job: dict[str, Any], generation_config: dict[str, Any]) -> str:
+        if self._fallback is not None:
+            return self._fallback.generate(job, generation_config)
+
+        from qwen_vl_utils import process_vision_info
+
+        messages = [
+            {
+                "role": "user",
+                "content": [
+                    {"type": "image", "image": str(Path(job["image"]["image_path"]).resolve())},
+                    {"type": "text", "text": job["prompt"]},
+                ],
+            }
+        ]
+        text = self.processor.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
+        image_inputs, video_inputs = process_vision_info(messages)
+        inputs = self.processor(
+            text=[text],
+            images=image_inputs,
+            videos=video_inputs,
+            padding=True,
+            return_tensors="pt",
+        ).to(self.model.device)
+        input_len = inputs["input_ids"].shape[-1]
+        with self.torch.inference_mode():
+            outputs = self.model.generate(
+                **inputs,
+                max_new_tokens=int(generation_config.get("max_new_tokens", 120)),
+                do_sample=float(generation_config.get("temperature", 0.0)) > 0,
+                temperature=float(generation_config.get("temperature", 0.2)),
+                top_p=float(generation_config.get("top_p", 0.9)),
+            )
+        return compact_text(self.processor.decode(outputs[0][input_len:], skip_special_tokens=True))
 
 
 class InternVLAdapter:
@@ -429,6 +537,14 @@ def dynamic_preprocess(image: Image.Image, *, min_num: int = 1, max_num: int = 1
 
 
 def make_adapter(model: dict[str, Any], args: argparse.Namespace) -> VLMAdapter:
+    if args.backend == "vllm_openai":
+        return VLLMOpenAIAdapter(
+            model["model_id"],
+            base_url=args.vllm_base_url,
+            api_key=args.vllm_api_key,
+            timeout_s=args.vllm_timeout,
+            request_concurrency=args.vllm_request_concurrency,
+        )
     adapter = model.get("adapter", "generic_pipeline")
     model_id = model["model_id"]
     image_ref_mode = model.get("image_ref_mode") or args.image_ref_mode
@@ -468,7 +584,7 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="Generate image descriptions for rendered jobs.")
     parser.add_argument("--jobs", required=True)
     parser.add_argument("--out", required=True)
-    parser.add_argument("--backend", choices=["mock", "transformers"], default="mock")
+    parser.add_argument("--backend", choices=["mock", "transformers", "vllm_openai"], default="mock")
     parser.add_argument("--generation-config", default="visual_grounded_dataset/configs/generation.json")
     parser.add_argument("--only-model-source", help="Run only jobs for one model source_id, e.g. qwen3_vl_4b.")
     parser.add_argument("--limit", type=int, help="Maximum number of jobs to run from the selected job file.")
@@ -481,6 +597,10 @@ def main() -> None:
     parser.add_argument("--dtype", default="auto", help="Transformers dtype. Use 'none' to omit dtype.")
     parser.add_argument("--image-ref-mode", choices=["file_uri", "path", "pil"], default="file_uri")
     parser.add_argument("--internvl-max-tiles", type=int, default=6)
+    parser.add_argument("--vllm-base-url", default=os.environ.get("VLLM_BASE_URL", "http://127.0.0.1:8000/v1"))
+    parser.add_argument("--vllm-api-key", default=os.environ.get("VLLM_API_KEY", "EMPTY"))
+    parser.add_argument("--vllm-timeout", type=float, default=float(os.environ.get("VLLM_TIMEOUT", "180")))
+    parser.add_argument("--vllm-request-concurrency", type=int, default=int(os.environ.get("VLLM_REQUEST_CONCURRENCY", "8")))
     args = parser.parse_args()
     args.device_map = normalize_device_map(args.device_map)
 
@@ -492,7 +612,7 @@ def main() -> None:
     jobs = jobs[args.start :]
     if args.limit is not None:
         jobs = jobs[: args.limit]
-    if args.backend == "transformers":
+    if args.backend in {"transformers", "vllm_openai"}:
         jobs = sorted(jobs, key=lambda job: job["model"]["source_id"])
 
     skip_ids = existing_response_ids(args.out) if args.resume else set()
@@ -510,6 +630,9 @@ def main() -> None:
     print(f"- skipped existing responses: {selected_before_skip - len(jobs)}")
     print(f"- jobs to generate: {len(jobs)}")
     print(f"- batch size: {args.batch_size}")
+    if args.backend == "vllm_openai":
+        print(f"- vLLM base URL: {args.vllm_base_url}")
+        print(f"- vLLM request concurrency: {args.vllm_request_concurrency}")
     print(f"- device map: {args.device_map}")
     print(f"- CUDA_VISIBLE_DEVICES: {os.environ.get('CUDA_VISIBLE_DEVICES', '<unset>')}")
     print(f"- {visible_accelerator_summary()}")
